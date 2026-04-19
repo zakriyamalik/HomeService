@@ -19,7 +19,10 @@ public class MyApplication extends Application {
     }
 
     private void loadMockData() {
-        // Categories
+        // "All" category (id=0) for resetting filter
+        categories.add(new Category(0, "All", android.R.drawable.ic_menu_edit));
+
+        // Regular categories
         categories.add(new Category(1, "Cleaning", android.R.drawable.ic_menu_edit));
         categories.add(new Category(2, "Plumbing", android.R.drawable.ic_menu_edit));
         categories.add(new Category(3, "Electrician", android.R.drawable.ic_menu_edit));
@@ -27,7 +30,7 @@ public class MyApplication extends Application {
         categories.add(new Category(5, "AC Repair", android.R.drawable.ic_menu_edit));
 
         // Services
-        services.add(new Service(1, "Home Cleaning", "Standard home cleaning service", 49.99, 1));
+        services.add(new Service(1, "Home Cleaning", "Standard home cleaning", 49.99, 1));
         services.add(new Service(2, "Deep Cleaning", "Thorough deep cleaning", 99.99, 1));
         services.add(new Service(3, "Tap Repair", "Fix leaking taps", 29.99, 2));
         services.add(new Service(4, "Pipe Fitting", "Install or repair pipes", 59.99, 2));
