@@ -2,6 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <!-- No permissions needed for ACTION_DIAL, ACTION_VIEW (maps/browser) -->
+
     <application
         android:name=".MyApplication"
         android:allowBackup="true"
@@ -22,36 +24,20 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".activities.OnboardingActivity"
-            android:exported="false" />
-        <activity
-            android:name=".activities.LoginSignupChoiceActivity"
-            android:exported="false" />
+        <activity android:name=".activities.OnboardingActivity" android:exported="false" />
+        <activity android:name=".activities.LoginSignupChoiceActivity" android:exported="false" />
 
-        <!-- Authentication Activities -->
-        <activity
-            android:name=".activities.LoginActivity"
-            android:exported="false" />
-        <activity
-            android:name=".activities.SignupActivity"
-            android:exported="false" />
-        <activity
-            android:name=".activities.ForgotPasswordActivity"
-            android:exported="false" />
-        <activity
-            android:name=".activities.VerifyOtpActivity"
-            android:exported="false" />
+        <!-- Authentication -->
+        <activity android:name=".activities.LoginActivity" android:exported="false" />
+        <activity android:name=".activities.SignupActivity" android:exported="false" />
+        <activity android:name=".activities.ForgotPasswordActivity" android:exported="false" />
+        <activity android:name=".activities.VerifyOtpActivity" android:exported="false" />
 
-        <!-- Main Navigation (5 Tabs) -->
-        <activity
-            android:name=".activities.HomeActivity"
-            android:exported="false" />
+        <!-- Main Navigation -->
+        <activity android:name=".activities.HomeActivity" android:exported="false" />
 
-        <!-- Booking Flow (Placeholder) -->
-        <activity
-            android:name=".activities.BookServiceActivity"
-            android:exported="false" />
+        <!-- Booking Flow -->
+        <activity android:name=".activities.BookServiceActivity" android:exported="false" />
         <activity android:name=".activities.SelectDateTimeActivity" android:exported="false" />
 
     </application>

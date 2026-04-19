@@ -56,6 +56,7 @@ public class SignupActivity extends AppCompatActivity {
                 return;
             }
 
+            // ✅ Save name and credentials
             editor.putString(KeyUtils.KEY_NAME, name);
             editor.putString(KeyUtils.KEY_USERNAME, username);
             editor.putString(KeyUtils.KEY_PASSWORD, password);
