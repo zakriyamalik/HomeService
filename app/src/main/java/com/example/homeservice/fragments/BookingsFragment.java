@@ -9,10 +9,19 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.homeservice.MyApplication;
 import com.example.homeservice.R;
+import com.example.homeservice.adapters.BookingAdapter;
 
 public class BookingsFragment extends Fragment {
+
+    private RecyclerView rvBookings;
+    private TextView tvEmpty;
+    private BookingAdapter adapter;
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -22,7 +31,37 @@ public class BookingsFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        TextView tvPlaceholder = view.findViewById(R.id.tvPlaceholder);
-        tvPlaceholder.setText("Bookings Fragment - Module 9 will display User Bookings");
+        init(view);
+
+        adapter = new BookingAdapter(requireContext(), MyApplication.bookings);
+        rvBookings.setLayoutManager(new LinearLayoutManager(requireContext()));
+        rvBookings.setAdapter(adapter);
+
+        updateEmptyState();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        // Refresh when returning from booking flow
+        if (adapter != null) {
+            adapter.notifyDataSetChanged();
+            updateEmptyState();
+        }
+    }
+
+    private void updateEmptyState() {
+        if (MyApplication.bookings.isEmpty()) {
+            rvBookings.setVisibility(View.GONE);
+            tvEmpty.setVisibility(View.VISIBLE);
+        } else {
+            rvBookings.setVisibility(View.VISIBLE);
+            tvEmpty.setVisibility(View.GONE);
+        }
+    }
+
+    private void init(View view) {
+        rvBookings = view.findViewById(R.id.rvBookings);
+        tvEmpty = view.findViewById(R.id.tvEmpty);
     }
 }
