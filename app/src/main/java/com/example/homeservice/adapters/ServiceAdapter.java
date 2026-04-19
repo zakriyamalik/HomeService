@@ -49,6 +49,13 @@ public class ServiceAdapter extends RecyclerView.Adapter<ServiceAdapter.ServiceV
         notifyDataSetChanged();
     }
 
+    // ✅ NEW METHOD for SearchFragment (efficient filtering)
+    public void updateList(List<Service> newList) {
+        this.displayList.clear();
+        this.displayList.addAll(newList);
+        notifyDataSetChanged();
+    }
+
     @NonNull
     @Override
     public ServiceViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
