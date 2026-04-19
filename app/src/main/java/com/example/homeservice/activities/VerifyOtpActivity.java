@@ -9,6 +9,7 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.homeservice.R;
+import com.example.homeservice.utils.KeyUtils;
 
 public class VerifyOtpActivity extends AppCompatActivity {
     private EditText etOtp;
@@ -20,7 +21,7 @@ public class VerifyOtpActivity extends AppCompatActivity {
         setContentView(R.layout.activity_verify_otp);
         init();
 
-        String email = getIntent().getStringExtra("email"); // not used, just for demo
+        String email = getIntent().getStringExtra(KeyUtils.KEY_EMAIL);
 
         btnCancel.setOnClickListener(v -> finish());
 

@@ -9,6 +9,7 @@ import android.os.Looper;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.homeservice.R;
+import com.example.homeservice.utils.KeyUtils;
 
 public class SplashActivity extends AppCompatActivity {
     @Override
@@ -16,16 +17,23 @@ public class SplashActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
 
-        SharedPreferences prefs = getSharedPreferences("APP", MODE_PRIVATE);
-        boolean isFirstLaunch = prefs.getBoolean("isFirstLaunch", true);
+        SharedPreferences appPrefs = getSharedPreferences("APP", MODE_PRIVATE);
+        SharedPreferences userPrefs = getSharedPreferences("USER", MODE_PRIVATE);
 
-        // Using Looper.getMainLooper() to avoid deprecated Handler constructor
+        boolean isFirstLaunch = appPrefs.getBoolean("isFirstLaunch", true);
+        boolean isLoggedIn = userPrefs.getBoolean(KeyUtils.KEY_IS_LOGIN, false);
+
         new Handler(Looper.getMainLooper()).postDelayed(() -> {
-            if (isFirstLaunch) {
-                startActivity(new Intent(SplashActivity.this, OnboardingActivity.class));
+            Intent intent;
+            if (isLoggedIn) {
+                intent = new Intent(SplashActivity.this, HomeActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+            } else if (isFirstLaunch) {
+                intent = new Intent(SplashActivity.this, OnboardingActivity.class);
             } else {
-                startActivity(new Intent(SplashActivity.this, LoginSignupChoiceActivity.class));
+                intent = new Intent(SplashActivity.this, LoginSignupChoiceActivity.class);
             }
+            startActivity(intent);
             finish();
         }, 2000);
     }

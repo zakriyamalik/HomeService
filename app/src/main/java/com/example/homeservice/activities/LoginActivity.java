@@ -47,8 +47,11 @@ public class LoginActivity extends AppCompatActivity {
                     && username.equals(savedUsername)
                     && password.equals(savedPassword)) {
                 sPref.edit().putBoolean(KeyUtils.KEY_IS_LOGIN, true).apply();
-                Toast.makeText(this, "Login successful", Toast.LENGTH_SHORT).show();
-                // TODO: Replace with HomeActivity in Module 4
+
+                // Clear back stack and go to Home
+                Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
                 finish();
             } else {
                 Toast.makeText(this, "Invalid username or password", Toast.LENGTH_SHORT).show();

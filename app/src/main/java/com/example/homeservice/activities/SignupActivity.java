@@ -49,7 +49,7 @@ public class SignupActivity extends AppCompatActivity {
                 return;
             }
 
-            // FIX: Prevent signup if ANY account already exists (single-user demo)
+            // Prevent signup if any account already exists (single-user demo)
             String existingUsername = sPref.getString(KeyUtils.KEY_USERNAME, "");
             if (!existingUsername.isEmpty()) {
                 Toast.makeText(this, "An account already exists. Please login.", Toast.LENGTH_SHORT).show();
@@ -63,7 +63,11 @@ public class SignupActivity extends AppCompatActivity {
             editor.apply();
 
             Toast.makeText(this, "Signup successful", Toast.LENGTH_SHORT).show();
-            // TODO: Navigate to HomeActivity (Module 4)
+
+            // Clear back stack and go to Home
+            Intent intent = new Intent(SignupActivity.this, HomeActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
             finish();
         });
     }
