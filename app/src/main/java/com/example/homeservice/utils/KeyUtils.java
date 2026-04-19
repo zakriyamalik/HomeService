@@ -11,4 +11,8 @@ public class KeyUtils {
     public static final String KEY_SERVICE_ID = "service_id";
     public static final String KEY_SERVICE_NAME = "service_name";
     public static final String KEY_SERVICE_PRICE = "service_price";
+
+    // Booking keys
+    public static final String KEY_BOOKING_DATE = "booking_date";
+    public static final String KEY_BOOKING_TIME = "booking_time";
 }
