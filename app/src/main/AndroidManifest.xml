@@ -13,7 +13,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.HomeService">
 
-        <!-- LAUNCHER Activity - Splash Screen -->
+        <!-- Splash & Onboarding -->
         <activity
             android:name=".activities.SplashActivity"
             android:exported="true">
@@ -22,15 +22,25 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
-        <!-- Onboarding Activity -->
         <activity
             android:name=".activities.OnboardingActivity"
             android:exported="false" />
-
-        <!-- Login/Signup Choice Activity (Placeholder for Module 3) -->
         <activity
             android:name=".activities.LoginSignupChoiceActivity"
+            android:exported="false" />
+
+        <!-- Authentication Activities -->
+        <activity
+            android:name=".activities.LoginActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activities.SignupActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activities.ForgotPasswordActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activities.VerifyOtpActivity"
             android:exported="false" />
 
     </application>
