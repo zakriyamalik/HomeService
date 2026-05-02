@@ -22,9 +22,9 @@ public class OnboardingPagerAdapter extends RecyclerView.Adapter<OnboardingPager
             "Choose date & time and confirm your booking instantly"
     };
     private int[] images = {
-            android.R.drawable.ic_menu_edit,
-            android.R.drawable.ic_menu_edit,
-            android.R.drawable.ic_menu_edit
+            R.drawable.ic_onboarding_1,
+            R.drawable.ic_onboarding_2,
+            R.drawable.ic_onboarding_3
     };
 
     public OnboardingPagerAdapter(Context context) {

@@ -24,7 +24,7 @@
             android:id="@+id/btnFilter"
             android:layout_width="48dp"
             android:layout_height="48dp"
-            android:src="@android:drawable/ic_menu_edit"
+            android:src="@drawable/ic_filter"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:padding="12dp"
             android:layout_margin="8dp"

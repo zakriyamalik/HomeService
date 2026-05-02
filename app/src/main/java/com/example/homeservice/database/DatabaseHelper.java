@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import com.example.homeservice.R;
 
 import androidx.annotation.Nullable;
 
@@ -104,12 +105,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     private void prepopulateCategories(SQLiteDatabase db) {
         String[][] categories = {
-                {"0", "All", String.valueOf(android.R.drawable.ic_menu_edit)},
-                {"1", "Cleaning", String.valueOf(android.R.drawable.ic_menu_edit)},
-                {"2", "Plumbing", String.valueOf(android.R.drawable.ic_menu_edit)},
-                {"3", "Electrician", String.valueOf(android.R.drawable.ic_menu_edit)},
-                {"4", "Painting", String.valueOf(android.R.drawable.ic_menu_edit)},
-                {"5", "AC Repair", String.valueOf(android.R.drawable.ic_menu_edit)}
+                {"0", "All", String.valueOf(R.drawable.ic_category_all)},
+                {"1", "Cleaning", String.valueOf(R.drawable.ic_category_cleaning)},
+                {"2", "Plumbing", String.valueOf(R.drawable.ic_category_plumbing)},
+                {"3", "Electrician", String.valueOf(R.drawable.ic_category_electrician)},
+                {"4", "Painting", String.valueOf(R.drawable.ic_category_painting)},
+                {"5", "AC Repair", String.valueOf(R.drawable.ic_category_ac)}
         };
         for (String[] cat : categories) {
             ContentValues values = new ContentValues();

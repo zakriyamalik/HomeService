@@ -42,8 +42,14 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Catego
     public void onBindViewHolder(@NonNull CategoryViewHolder holder, int position) {
         Category category = categories.get(position);
         holder.tvName.setText(category.getName());
-        holder.ivIcon.setImageResource(category.getIconResId());
-        holder.itemView.setOnClickListener(v -> listener.onCategoryClick(category));
+        holder.ivIcon.setImageResource(getCategoryIcon(category.getName()));
+
+        // ✅ Click listener attached here
+        holder.itemView.setOnClickListener(v -> {
+            if (listener != null) {
+                listener.onCategoryClick(category);
+            }
+        });
     }
 
     @Override
@@ -59,6 +65,19 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Catego
             super(itemView);
             tvName = itemView.findViewById(R.id.tvCategoryName);
             ivIcon = itemView.findViewById(R.id.ivCategoryIcon);
+        }
+    }
+
+    private int getCategoryIcon(String categoryName) {
+        if (categoryName == null) return R.drawable.ic_category_all;
+        switch (categoryName) {
+            case "Cleaning": return R.drawable.ic_category_cleaning;
+            case "Plumbing": return R.drawable.ic_category_plumbing;
+            case "Electrician": return R.drawable.ic_category_electrician;
+            case "Painting": return R.drawable.ic_category_painting;
+            case "AC Repair": return R.drawable.ic_category_ac;
+            case "All": return R.drawable.ic_category_all;
+            default: return R.drawable.ic_category_all;
         }
     }
 }

@@ -27,23 +27,23 @@ public class HomeActivity extends AppCompatActivity {
             switch (position) {
                 case 0:
                     tab.setText("Home");
-                    tab.setIcon(android.R.drawable.ic_menu_myplaces);
+                    tab.setIcon(R.drawable.ic_tab_home);
                     break;
                 case 1:
                     tab.setText("Categories");
-                    tab.setIcon(android.R.drawable.ic_menu_view);
+                    tab.setIcon(R.drawable.ic_tab_categories);
                     break;
                 case 2:
                     tab.setText("Search");
-                    tab.setIcon(android.R.drawable.ic_menu_search);
+                    tab.setIcon(R.drawable.ic_tab_search);
                     break;
                 case 3:
                     tab.setText("Bookings");
-                    tab.setIcon(android.R.drawable.ic_menu_agenda);
+                    tab.setIcon(R.drawable.ic_tab_bookings);
                     break;
                 case 4:
                     tab.setText("Account");
-                    tab.setIcon(android.R.drawable.ic_menu_edit);
+                    tab.setIcon(R.drawable.ic_tab_account);
                     break;
             }
         }).attach();
