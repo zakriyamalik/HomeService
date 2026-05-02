@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.homeservice.R;
 import com.example.homeservice.models.Booking;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.BookingViewHolder> {
@@ -21,7 +22,13 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.BookingV
 
     public BookingAdapter(Context context, List<Booking> bookings) {
         this.context = context;
-        this.bookings = bookings;
+        this.bookings = new ArrayList<>(bookings); // Defensive copy
+    }
+
+    public void updateBookings(List<Booking> newBookings) {
+        this.bookings.clear();
+        this.bookings.addAll(newBookings);
+        notifyDataSetChanged();
     }
 
     @NonNull

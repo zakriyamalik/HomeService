@@ -1,112 +1,88 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="16dp">
-
-<LinearLayout
-android:layout_width="match_parent"
-android:layout_height="wrap_content"
-android:orientation="vertical"
-android:gravity="center_horizontal">
-
-<!-- Profile Image Placeholder -->
-<androidx.cardview.widget.CardView
-    android:layout_width="100dp"
-    android:layout_height="100dp"
-    android:layout_marginTop="20dp"
-    app:cardCornerRadius="50dp"
-    app:cardElevation="4dp">
+    android:orientation="vertical"
+    android:gravity="center_horizontal"
+    android:padding="24dp">
 
     <ImageView
         android:id="@+id/ivProfilePic"
+        android:layout_width="120dp"
+        android:layout_height="120dp"
+        android:src="@drawable/ic_launcher_foreground"
+        android:scaleType="centerCrop"
+        android:background="@drawable/ic_launcher_background"
+        android:layout_marginTop="20dp"
+        android:clickable="true"
+        android:focusable="true" />
+
+    <Button
+        android:id="@+id/btnUploadPic"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Change Photo"
+        android:layout_marginTop="12dp" />
+
+    <TextView
+        android:id="@+id/tvUsername"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="User Name"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:layout_marginTop="20dp" />
+
+    <TextView
+        android:id="@+id/tvEmail"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="user@example.com"
+        android:textSize="14sp"
+        android:layout_marginTop="4dp" />
+
+    <TextView
+        android:id="@+id/tvUserPhone"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Phone"
+        android:textSize="14sp"
+        android:layout_marginTop="4dp" />
+
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:src="@android:drawable/ic_menu_edit"
-        android:padding="20dp" />
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:layout_marginTop="30dp">
 
-</androidx.cardview.widget.CardView>
+        <Button
+            android:id="@+id/btnCall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Call"
+            android:layout_marginEnd="8dp" />
 
-<!-- User Info -->
-<TextView
-    android:id="@+id/tvUsername"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:text="User Name"
-    android:textSize="24sp"
-    android:textStyle="bold"
-    android:layout_marginTop="16dp" />
+        <Button
+            android:id="@+id/btnMap"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Map"
+            android:layout_marginEnd="8dp" />
 
-<TextView
-    android:id="@+id/tvEmail"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:text="user@example.com"
-    android:textSize="16sp"
-    android:textColor="@android:color/darker_gray"
-    android:layout_marginBottom="30dp" />
-
-<!-- Logout Button -->
-<Button
-    android:id="@+id/btnLogout"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:text="Logout"
-    android:backgroundTint="@android:color/holo_red_dark"
-    android:layout_marginBottom="30dp" />
-
-<!-- Contact Section -->
-<TextView
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:text="Contact Support"
-    android:textSize="18sp"
-    android:textStyle="bold"
-    android:layout_marginBottom="16dp" />
-
-<LinearLayout
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="horizontal"
-    android:gravity="center"
-    android:layout_marginBottom="20dp">
+        <Button
+            android:id="@+id/btnWebsite"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Web" />
+    </LinearLayout>
 
     <Button
-        android:id="@+id/btnCall"
-        android:layout_width="0dp"
+        android:id="@+id/btnLogout"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:text="Call"
-        android:layout_marginEnd="8dp" />
-
-    <Button
-        android:id="@+id/btnMap"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:text="Map"
-        android:layout_marginStart="8dp"
-        android:layout_marginEnd="8dp" />
-
-    <Button
-        android:id="@+id/btnWebsite"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:text="Website"
-        android:layout_marginStart="8dp" />
+        android:text="Logout"
+        android:layout_marginTop="24dp"
+        android:backgroundTint="@android:color/holo_red_dark" />
 
 </LinearLayout>
-
-<TextView
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:text="Version 1.0"
-    android:textSize="12sp"
-    android:textColor="@android:color/darker_gray"
-    android:layout_marginTop="20dp" />
-
-</LinearLayout>
-
-    </ScrollView>

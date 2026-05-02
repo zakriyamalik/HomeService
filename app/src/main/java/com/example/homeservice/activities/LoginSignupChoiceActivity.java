@@ -17,8 +17,8 @@ public class LoginSignupChoiceActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login_signup_choice);
         init();
 
-        btnLogin.setOnClickListener(v -> startActivity(new Intent(this, LoginActivity.class)));
-        btnSignup.setOnClickListener(v -> startActivity(new Intent(this, SignupActivity.class)));
+        btnLogin.setOnClickListener(v -> startActivity(new Intent(this, PhoneAuthActivity.class)));
+        btnSignup.setOnClickListener(v -> startActivity(new Intent(this, PhoneAuthActivity.class)));
     }
 
     private void init() {

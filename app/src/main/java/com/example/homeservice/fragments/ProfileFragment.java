@@ -20,27 +20,24 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.example.homeservice.R;
-import com.example.homeservice.activities.LoginSignupChoiceActivity;
-import com.example.homeservice.utils.KeyUtils;
 import com.google.firebase.auth.FirebaseAuth;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 
-public class AccountFragment extends Fragment {
+public class ProfileFragment extends Fragment {
 
     private static final int PICK_IMAGE = 100;
     private ImageView ivProfilePic;
-    private Button btnUploadPic, btnLogout, btnCall, btnMap, btnWebsite;
-    private TextView tvUsername, tvEmail, tvUserPhone;
-    private SharedPreferences userPrefs;
+    private Button btnUploadPic;
+    private TextView tvUserName, tvUserPhone;
     private String userId;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_account, container, false);
+        return inflater.inflate(R.layout.fragment_profile, container, false);
     }
 
     @Override
@@ -49,17 +46,12 @@ public class AccountFragment extends Fragment {
         init(view);
 
         userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
-        userPrefs = requireActivity().getSharedPreferences("USER", android.content.Context.MODE_PRIVATE);
 
-        loadUserInfo();
         loadProfilePic();
+        loadUserInfo();
 
-        ivProfilePic.setOnClickListener(v -> pickImage());
         btnUploadPic.setOnClickListener(v -> pickImage());
-        btnLogout.setOnClickListener(v -> logout());
-        btnCall.setOnClickListener(v -> makeCall());
-        btnMap.setOnClickListener(v -> openMap());
-        btnWebsite.setOnClickListener(v -> openWebsite());
+        ivProfilePic.setOnClickListener(v -> pickImage());
     }
 
     private void pickImage() {
@@ -105,54 +97,16 @@ public class AccountFragment extends Fragment {
     }
 
     private void loadUserInfo() {
-        String name = userPrefs.getString(KeyUtils.KEY_NAME, "User");
-        String email = userPrefs.getString(KeyUtils.KEY_EMAIL, name + "@example.com");
-        String phone = userPrefs.getString("user_phone", "Unknown");
-
-        tvUsername.setText(name);
-        tvEmail.setText(email);
+        SharedPreferences prefs = requireActivity().getSharedPreferences("USER", android.content.Context.MODE_PRIVATE);
+        String phone = prefs.getString("user_phone", "Unknown");
         tvUserPhone.setText(phone);
-    }
-
-    private void logout() {
-        userPrefs.edit().putBoolean(KeyUtils.KEY_IS_LOGIN, false).apply();
-        Intent intent = new Intent(requireActivity(), LoginSignupChoiceActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(intent);
-        requireActivity().finish();
-    }
-
-    private void makeCall() {
-        Intent intent = new Intent(Intent.ACTION_DIAL);
-        intent.setData(Uri.parse("tel:+1234567890"));
-        startActivity(intent);
-    }
-
-    private void openMap() {
-        Intent intent = new Intent(Intent.ACTION_VIEW);
-        intent.setData(Uri.parse("google.navigation:q=Home+Service+Headquarters"));
-        if (intent.resolveActivity(requireActivity().getPackageManager()) != null) {
-            startActivity(intent);
-        } else {
-            Toast.makeText(requireContext(), "No map app found", Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    private void openWebsite() {
-        Intent intent = new Intent(Intent.ACTION_VIEW);
-        intent.setData(Uri.parse("https://www.homeservice.com"));
-        startActivity(intent);
+        tvUserName.setText("User " + userId.substring(0, 6));
     }
 
     private void init(View view) {
         ivProfilePic = view.findViewById(R.id.ivProfilePic);
         btnUploadPic = view.findViewById(R.id.btnUploadPic);
-        tvUsername = view.findViewById(R.id.tvUsername);
-        tvEmail = view.findViewById(R.id.tvEmail);
+        tvUserName = view.findViewById(R.id.tvUserName);
         tvUserPhone = view.findViewById(R.id.tvUserPhone);
-        btnLogout = view.findViewById(R.id.btnLogout);
-        btnCall = view.findViewById(R.id.btnCall);
-        btnMap = view.findViewById(R.id.btnMap);
-        btnWebsite = view.findViewById(R.id.btnWebsite);
     }
 }

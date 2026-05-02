@@ -19,6 +19,7 @@ import com.example.homeservice.MyApplication;
 import com.example.homeservice.R;
 import com.example.homeservice.activities.BookServiceActivity;
 import com.example.homeservice.adapters.ServiceAdapter;
+import com.example.homeservice.database.LocalRepository;
 import com.example.homeservice.models.Service;
 import com.example.homeservice.utils.KeyUtils;
 
@@ -31,6 +32,7 @@ public class SearchFragment extends Fragment implements ServiceAdapter.OnService
     private RecyclerView rvResults;
     private ServiceAdapter adapter;
     private List<Service> allServices;
+    private LocalRepository repository;
 
     @Nullable
     @Override
@@ -43,11 +45,8 @@ public class SearchFragment extends Fragment implements ServiceAdapter.OnService
         super.onViewCreated(view, savedInstanceState);
         init(view);
 
-        // Copy global services to a local list (no mutation)
-        allServices = new ArrayList<>(MyApplication.services);
-        adapter = new ServiceAdapter(requireContext(), allServices, this);
-        rvResults.setLayoutManager(new LinearLayoutManager(requireContext()));
-        rvResults.setAdapter(adapter);
+        repository = new LocalRepository(MyApplication.getDatabaseHelper());
+        loadAllServices();
 
         etSearch.addTextChangedListener(new TextWatcher() {
             @Override
@@ -63,6 +62,13 @@ public class SearchFragment extends Fragment implements ServiceAdapter.OnService
         });
     }
 
+    private void loadAllServices() {
+        allServices = repository.getAllServices();
+        adapter = new ServiceAdapter(requireContext(), allServices, this);
+        rvResults.setLayoutManager(new LinearLayoutManager(requireContext()));
+        rvResults.setAdapter(adapter);
+    }
+
     private void filter(String query) {
         List<Service> filtered = new ArrayList<>();
         for (Service service : allServices) {
@@ -70,7 +76,6 @@ public class SearchFragment extends Fragment implements ServiceAdapter.OnService
                 filtered.add(service);
             }
         }
-        // Efficient update – uses the added updateList() method
         adapter.updateList(filtered);
     }
 

@@ -8,8 +8,11 @@ public class Booking {
     private String time;
     private double price;
     private String status;
+    private int rating;
+    private String userId;
 
-    public Booking(int id, int serviceId, String serviceName, String date, String time, double price, String status) {
+    public Booking(int id, int serviceId, String serviceName, String date, String time,
+                   double price, String status, int rating, String userId) {
         this.id = id;
         this.serviceId = serviceId;
         this.serviceName = serviceName;
@@ -17,8 +20,11 @@ public class Booking {
         this.time = time;
         this.price = price;
         this.status = status;
+        this.rating = rating;
+        this.userId = userId;
     }
 
+    // Getters
     public int getId() { return id; }
     public int getServiceId() { return serviceId; }
     public String getServiceName() { return serviceName; }
@@ -26,5 +32,6 @@ public class Booking {
     public String getTime() { return time; }
     public double getPrice() { return price; }
     public String getStatus() { return status; }
-    public void setStatus(String status) { this.status = status; }
+    public int getRating() { return rating; }
+    public String getUserId() { return userId; }
 }

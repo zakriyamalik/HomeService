@@ -22,16 +22,18 @@ public class SplashActivity extends AppCompatActivity {
 
         boolean isFirstLaunch = appPrefs.getBoolean("isFirstLaunch", true);
         boolean isLoggedIn = userPrefs.getBoolean(KeyUtils.KEY_IS_LOGIN, false);
+        String firebaseUid = userPrefs.getString("firebase_uid", null);
+        boolean hasFirebaseUser = (firebaseUid != null && !firebaseUid.isEmpty());
 
         new Handler(Looper.getMainLooper()).postDelayed(() -> {
             Intent intent;
-            if (isLoggedIn) {
+            if (isLoggedIn && hasFirebaseUser) {
                 intent = new Intent(SplashActivity.this, HomeActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
             } else if (isFirstLaunch) {
                 intent = new Intent(SplashActivity.this, OnboardingActivity.class);
             } else {
-                intent = new Intent(SplashActivity.this, LoginSignupChoiceActivity.class);
+                intent = new Intent(SplashActivity.this, PhoneAuthActivity.class);
             }
             startActivity(intent);
             finish();

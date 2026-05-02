@@ -2,6 +2,8 @@ package com.example.homeservice.fragments;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,15 +20,25 @@ import com.example.homeservice.R;
 import com.example.homeservice.activities.BookServiceActivity;
 import com.example.homeservice.adapters.CategoryAdapter;
 import com.example.homeservice.adapters.ServiceAdapter;
+import com.example.homeservice.database.LocalRepository;
 import com.example.homeservice.models.Category;
 import com.example.homeservice.models.Service;
 import com.example.homeservice.utils.KeyUtils;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class HomeFragment extends Fragment implements CategoryAdapter.OnCategoryClickListener, ServiceAdapter.OnServiceClickListener {
 
     private RecyclerView rvCategories, rvServices;
     private CategoryAdapter categoryAdapter;
     private ServiceAdapter serviceAdapter;
+    private LocalRepository repository;
+    private List<Service> allServices;
+    private final ExecutorService executor = Executors.newSingleThreadExecutor();
+    private final Handler mainHandler = new Handler(Looper.getMainLooper());
 
     @Nullable
     @Override
@@ -39,15 +51,28 @@ public class HomeFragment extends Fragment implements CategoryAdapter.OnCategory
         super.onViewCreated(view, savedInstanceState);
         init(view);
 
-        // Categories - Horizontal
-        categoryAdapter = new CategoryAdapter(requireContext(), MyApplication.categories, this);
-        rvCategories.setLayoutManager(new LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false));
-        rvCategories.setAdapter(categoryAdapter);
+        // Use singleton DatabaseHelper
+        repository = new LocalRepository(MyApplication.getDatabaseHelper());
 
-        // Services - Vertical (fixed adapter uses copy of global list)
-        serviceAdapter = new ServiceAdapter(requireContext(), MyApplication.services, this);
-        rvServices.setLayoutManager(new LinearLayoutManager(requireContext()));
-        rvServices.setAdapter(serviceAdapter);
+        loadCategoriesAndServices();
+    }
+
+    private void loadCategoriesAndServices() {
+        executor.execute(() -> {
+            List<Category> categories = repository.getAllCategories();
+            List<Service> services = repository.getAllServices();
+            allServices = new ArrayList<>(services);
+
+            mainHandler.post(() -> {
+                categoryAdapter = new CategoryAdapter(requireContext(), categories, this);
+                rvCategories.setLayoutManager(new LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false));
+                rvCategories.setAdapter(categoryAdapter);
+
+                serviceAdapter = new ServiceAdapter(requireContext(), services, this);
+                rvServices.setLayoutManager(new LinearLayoutManager(requireContext()));
+                rvServices.setAdapter(serviceAdapter);
+            });
+        });
     }
 
     private void init(View view) {
@@ -57,12 +82,18 @@ public class HomeFragment extends Fragment implements CategoryAdapter.OnCategory
 
     @Override
     public void onCategoryClick(Category category) {
-        if (category.getId() == 0) { // "All" category
-            serviceAdapter.resetFilter();
-        } else {
-            serviceAdapter.filterByCategory(category.getId());
-        }
-        Toast.makeText(requireContext(), "Showing: " + category.getName(), Toast.LENGTH_SHORT).show();
+        executor.execute(() -> {
+            List<Service> filtered;
+            if (category.getId() == 0) {
+                filtered = new ArrayList<>(allServices);
+            } else {
+                filtered = repository.getServicesByCategory(category.getId());
+            }
+            mainHandler.post(() -> {
+                serviceAdapter.updateList(filtered);
+                Toast.makeText(requireContext(), "Showing: " + category.getName(), Toast.LENGTH_SHORT).show();
+            });
+        });
     }
 
     @Override
@@ -72,5 +103,11 @@ public class HomeFragment extends Fragment implements CategoryAdapter.OnCategory
         intent.putExtra(KeyUtils.KEY_SERVICE_NAME, service.getName());
         intent.putExtra(KeyUtils.KEY_SERVICE_PRICE, service.getPrice());
         startActivity(intent);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        executor.shutdown();
     }
 }

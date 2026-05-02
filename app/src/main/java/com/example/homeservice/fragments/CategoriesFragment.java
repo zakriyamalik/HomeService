@@ -15,12 +15,16 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.homeservice.MyApplication;
 import com.example.homeservice.R;
 import com.example.homeservice.adapters.CategoryAdapter;
+import com.example.homeservice.database.LocalRepository;
 import com.example.homeservice.models.Category;
+
+import java.util.List;
 
 public class CategoriesFragment extends Fragment implements CategoryAdapter.OnCategoryClickListener {
 
     private RecyclerView rvCategories;
     private CategoryAdapter adapter;
+    private LocalRepository repository;
 
     @Nullable
     @Override
@@ -33,8 +37,14 @@ public class CategoriesFragment extends Fragment implements CategoryAdapter.OnCa
         super.onViewCreated(view, savedInstanceState);
         init(view);
 
-        // GridLayoutManager with 2 columns (syllabus Lecture 7 pattern)
-        adapter = new CategoryAdapter(requireContext(), MyApplication.categories, this);
+        repository = new LocalRepository(MyApplication.getDatabaseHelper());
+        loadCategories();
+    }
+
+    private void loadCategories() {
+        List<Category> categories = repository.getAllCategories();
+
+        adapter = new CategoryAdapter(requireContext(), categories, this);
         rvCategories.setLayoutManager(new GridLayoutManager(requireContext(), 2));
         rvCategories.setAdapter(adapter);
     }
@@ -45,7 +55,6 @@ public class CategoriesFragment extends Fragment implements CategoryAdapter.OnCa
 
     @Override
     public void onCategoryClick(Category category) {
-        // For now, just show a Toast. Later we can open a filtered services screen.
         Toast.makeText(requireContext(), "Category: " + category.getName(), Toast.LENGTH_SHORT).show();
     }
 }
