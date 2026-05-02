@@ -4,6 +4,8 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.RatingBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -19,10 +21,24 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.BookingV
 
     private Context context;
     private List<Booking> bookings;
+    private OnCancelClickListener cancelListener;
+    private OnRateClickListener rateListener;
 
-    public BookingAdapter(Context context, List<Booking> bookings) {
+    public interface OnCancelClickListener {
+        void onCancelClick(Booking booking);
+    }
+
+    public interface OnRateClickListener {
+        void onRateClick(Booking booking);
+    }
+
+    public BookingAdapter(Context context, List<Booking> bookings,
+                          OnCancelClickListener cancelListener,
+                          OnRateClickListener rateListener) {
         this.context = context;
-        this.bookings = new ArrayList<>(bookings); // Defensive copy
+        this.bookings = new ArrayList<>(bookings);
+        this.cancelListener = cancelListener;
+        this.rateListener = rateListener;
     }
 
     public void updateBookings(List<Booking> newBookings) {
@@ -45,6 +61,25 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.BookingV
         holder.tvDateTime.setText(booking.getDate() + " at " + booking.getTime());
         holder.tvPrice.setText("$" + booking.getPrice());
         holder.tvStatus.setText(booking.getStatus());
+
+        // Show rating (0 = not rated, show empty stars)
+        holder.rbRating.setRating(booking.getRating());
+
+        // Cancel button only for Upcoming
+        if ("Upcoming".equals(booking.getStatus()) && cancelListener != null) {
+            holder.btnCancel.setVisibility(View.VISIBLE);
+            holder.btnCancel.setOnClickListener(v -> cancelListener.onCancelClick(booking));
+        } else {
+            holder.btnCancel.setVisibility(View.GONE);
+        }
+
+        // Rate button for all non-cancelled bookings
+        if (!"Cancelled".equals(booking.getStatus()) && rateListener != null) {
+            holder.btnRate.setVisibility(View.VISIBLE);
+            holder.btnRate.setOnClickListener(v -> rateListener.onRateClick(booking));
+        } else {
+            holder.btnRate.setVisibility(View.GONE);
+        }
     }
 
     @Override
@@ -54,6 +89,8 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.BookingV
 
     static class BookingViewHolder extends RecyclerView.ViewHolder {
         TextView tvServiceName, tvDateTime, tvPrice, tvStatus;
+        RatingBar rbRating;
+        Button btnCancel, btnRate;
 
         public BookingViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -61,6 +98,9 @@ public class BookingAdapter extends RecyclerView.Adapter<BookingAdapter.BookingV
             tvDateTime = itemView.findViewById(R.id.tvBookingDateTime);
             tvPrice = itemView.findViewById(R.id.tvBookingPrice);
             tvStatus = itemView.findViewById(R.id.tvBookingStatus);
+            rbRating = itemView.findViewById(R.id.rbBookingRating);
+            btnCancel = itemView.findViewById(R.id.btnCancelBooking);
+            btnRate = itemView.findViewById(R.id.btnRateBooking);
         }
     }
 }

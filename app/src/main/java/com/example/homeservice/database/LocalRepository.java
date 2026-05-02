@@ -143,4 +143,45 @@ public class LocalRepository {
 
         return db.update(DatabaseHelper.TABLE_BOOKINGS, values, whereClause, whereArgs);
     }
+    public int updateBookingRating(int bookingId, int rating) {
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(DatabaseHelper.COLUMN_BOOKING_RATING, rating);
+
+        String whereClause = DatabaseHelper.COLUMN_ID + " = ?";
+        String[] whereArgs = {String.valueOf(bookingId)};
+
+        int result = db.update(DatabaseHelper.TABLE_BOOKINGS, values, whereClause, whereArgs);
+        // Do not close db – singleton manages it
+        return result;
+    }
+    public List<Booking> getAllActiveBookings(String userId) {
+        List<Booking> bookings = new ArrayList<>();
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+        String selection = DatabaseHelper.COLUMN_BOOKING_USER_ID + " = ? AND "
+                + DatabaseHelper.COLUMN_BOOKING_STATUS + " != ?";
+        String[] selectionArgs = {userId, "Cancelled"};
+        Cursor cursor = null;
+        try {
+            cursor = db.query(DatabaseHelper.TABLE_BOOKINGS, null, selection, selectionArgs, null, null, null);
+            if (cursor != null && cursor.moveToFirst()) {
+                do {
+                    int id = cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_ID));
+                    int serviceId = cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_BOOKING_SERVICE_ID));
+                    String serviceName = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_BOOKING_SERVICE_NAME));
+                    String date = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_BOOKING_DATE));
+                    String time = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_BOOKING_TIME));
+                    double price = cursor.getDouble(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_BOOKING_PRICE));
+                    String status = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_BOOKING_STATUS));
+                    int rating = cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_BOOKING_RATING));
+                    String userIdFromDb = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_BOOKING_USER_ID));
+
+                    bookings.add(new Booking(id, serviceId, serviceName, date, time, price, status, rating, userIdFromDb));
+                } while (cursor.moveToNext());
+            }
+        } finally {
+            if (cursor != null) cursor.close();
+        }
+        return bookings;
+    }
 }
