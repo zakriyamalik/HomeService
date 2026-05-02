@@ -15,7 +15,6 @@ import android.text.TextUtils;
 public class LocalRepository {
     private final DatabaseHelper dbHelper;
 
-    // Singleton constructor
     public LocalRepository(DatabaseHelper dbHelper) {
         this.dbHelper = dbHelper;
     }
@@ -38,7 +37,6 @@ public class LocalRepository {
             }
         } finally {
             if (cursor != null) cursor.close();
-            // DO NOT close db – it's managed by DatabaseHelper singleton
         }
         return categories;
     }
@@ -134,28 +132,30 @@ public class LocalRepository {
         return bookings;
     }
 
-    public int updateBookingStatus(int bookingId, String newStatus) {
+    // --- FIX 3: Enforce user ownership on status update ---
+    public int updateBookingStatus(int bookingId, String newStatus, String userId) {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put(DatabaseHelper.COLUMN_BOOKING_STATUS, newStatus);
 
-        String whereClause = DatabaseHelper.COLUMN_ID + " = ?";
-        String[] whereArgs = {String.valueOf(bookingId)};
+        String whereClause = DatabaseHelper.COLUMN_ID + " = ? AND " + DatabaseHelper.COLUMN_BOOKING_USER_ID + " = ?";
+        String[] whereArgs = {String.valueOf(bookingId), userId};
 
         return db.update(DatabaseHelper.TABLE_BOOKINGS, values, whereClause, whereArgs);
     }
-    public int updateBookingRating(int bookingId, int rating) {
+
+    // --- FIX 4: Enforce user ownership on rating update ---
+    public int updateBookingRating(int bookingId, int rating, String userId) {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put(DatabaseHelper.COLUMN_BOOKING_RATING, rating);
 
-        String whereClause = DatabaseHelper.COLUMN_ID + " = ?";
-        String[] whereArgs = {String.valueOf(bookingId)};
+        String whereClause = DatabaseHelper.COLUMN_ID + " = ? AND " + DatabaseHelper.COLUMN_BOOKING_USER_ID + " = ?";
+        String[] whereArgs = {String.valueOf(bookingId), userId};
 
-        int result = db.update(DatabaseHelper.TABLE_BOOKINGS, values, whereClause, whereArgs);
-        // Do not close db – singleton manages it
-        return result;
+        return db.update(DatabaseHelper.TABLE_BOOKINGS, values, whereClause, whereArgs);
     }
+
     public List<Booking> getAllActiveBookings(String userId) {
         List<Booking> bookings = new ArrayList<>();
         SQLiteDatabase db = dbHelper.getReadableDatabase();
@@ -185,6 +185,7 @@ public class LocalRepository {
         }
         return bookings;
     }
+
     public List<Service> filterServices(Integer categoryId, Double minPrice, Double maxPrice) {
         List<Service> services = new ArrayList<>();
         SQLiteDatabase db = dbHelper.getReadableDatabase();
@@ -227,5 +228,15 @@ public class LocalRepository {
             if (cursor != null) cursor.close();
         }
         return services;
+    }
+    public long insertOrUpdateUser(String uid, String name, String email, String phone, String profilePicUrl) {
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(DatabaseHelper.COLUMN_USER_UID, uid);
+        values.put(DatabaseHelper.COLUMN_USER_NAME, name);
+        values.put(DatabaseHelper.COLUMN_USER_EMAIL, email);
+        values.put(DatabaseHelper.COLUMN_USER_PHONE, phone);
+        values.put(DatabaseHelper.COLUMN_USER_PROFILE_PIC, profilePicUrl);
+        return db.replace(DatabaseHelper.TABLE_USERS, null, values); // insert OR update
     }
 }

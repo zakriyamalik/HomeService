@@ -1,6 +1,7 @@
 package com.example.homeservice.fragments;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -10,7 +11,6 @@ import android.view.ViewGroup;
 import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.content.Context;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -40,6 +40,7 @@ public class BookingsFragment extends Fragment
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
     private final Handler mainHandler = new Handler(Looper.getMainLooper());
     private AlertDialog activeDialog;
+    private String currentUserId; // Cached for ownership checks
 
     @Nullable
     @Override
@@ -56,11 +57,11 @@ public class BookingsFragment extends Fragment
     }
 
     private void loadBookings() {
-        String userId = requireActivity().getSharedPreferences("USER", Context.MODE_PRIVATE)
+        currentUserId = requireActivity().getSharedPreferences("USER", Context.MODE_PRIVATE)
                 .getString("firebase_uid", "temp_user");
 
         executor.execute(() -> {
-            List<Booking> bookings = repository.getAllActiveBookings(userId);
+            List<Booking> bookings = repository.getAllActiveBookings(currentUserId);
             mainHandler.post(() -> {
                 if (!isAdded() || getContext() == null) return;
 
@@ -82,7 +83,7 @@ public class BookingsFragment extends Fragment
         tvEmpty.setVisibility(isEmpty ? View.VISIBLE : View.GONE);
     }
 
-    // ---------- CANCELLATION (from Step 5) ----------
+    // ---------- CANCELLATION (FIX 3: pass userId) ----------
     @Override
     public void onCancelClick(Booking booking) {
         if (!isAdded() || getContext() == null) return;
@@ -97,7 +98,7 @@ public class BookingsFragment extends Fragment
 
     private void cancelBooking(Booking booking) {
         executor.execute(() -> {
-            int result = repository.updateBookingStatus(booking.getId(), "Cancelled");
+            int result = repository.updateBookingStatus(booking.getId(), "Cancelled", currentUserId);
             mainHandler.post(() -> {
                 if (!isAdded() || getContext() == null) return;
                 if (result > 0) {
@@ -110,12 +111,11 @@ public class BookingsFragment extends Fragment
         });
     }
 
-    // ---------- RATING (Step 6) ----------
+    // ---------- RATING (FIX 4: pass userId) ----------
     @Override
     public void onRateClick(Booking booking) {
         if (!isAdded() || getContext() == null) return;
 
-        // Inflate dialog layout with RatingBar
         View dialogView = getLayoutInflater().inflate(R.layout.dialog_rate_booking, null);
         RatingBar ratingBar = dialogView.findViewById(R.id.dialogRatingBar);
         ratingBar.setRating(booking.getRating());
@@ -135,12 +135,12 @@ public class BookingsFragment extends Fragment
 
     private void submitRating(Booking booking, int rating) {
         executor.execute(() -> {
-            int result = repository.updateBookingRating(booking.getId(), rating);
+            int result = repository.updateBookingRating(booking.getId(), rating, currentUserId);
             mainHandler.post(() -> {
                 if (!isAdded() || getContext() == null) return;
                 if (result > 0) {
                     Toast.makeText(getContext(), "Rated " + rating + " stars", Toast.LENGTH_SHORT).show();
-                    loadBookings(); // Refresh to show new rating
+                    loadBookings();
                 } else {
                     Toast.makeText(getContext(), "Failed to save rating", Toast.LENGTH_SHORT).show();
                 }

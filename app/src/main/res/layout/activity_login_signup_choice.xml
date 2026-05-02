@@ -4,6 +4,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:gravity="center"
+    android:background="@color/background"
     android:padding="30dp">
 
     <TextView
@@ -12,20 +13,28 @@
         android:text="Home Service"
         android:textSize="32sp"
         android:textStyle="bold"
+        android:textColor="@color/text_primary"
         android:layout_marginBottom="60dp" />
+
+    <Button
+        android:id="@+id/btnEmailAuth"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Continue with Email"
+        android:layout_marginBottom="20dp" />
 
     <Button
         android:id="@+id/btnLogin"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Login"
+        android:text="Login with Phone"
         android:layout_marginBottom="20dp" />
 
     <Button
         android:id="@+id/btnSignup"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Sign Up"
+        android:text="Sign Up with Phone"
         android:backgroundTint="@color/purple_500" />
 
 </LinearLayout>

@@ -34,6 +34,8 @@
         <activity android:name=".activities.ForgotPasswordActivity" android:exported="false" />
         <activity android:name=".activities.VerifyOtpActivity" android:exported="false" />
         <activity android:name=".activities.PhoneAuthActivity" android:exported="false" />
+        <activity android:name=".activities.EmailRegisterActivity" />
+        <activity android:name=".activities.EmailLoginActivity" />
 
         <!-- Main Navigation -->
         <activity android:name=".activities.HomeActivity" android:exported="false" />

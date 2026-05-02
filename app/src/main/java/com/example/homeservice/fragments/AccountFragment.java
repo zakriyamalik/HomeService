@@ -18,6 +18,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.fragment.app.Fragment;
 
 import com.example.homeservice.R;
@@ -25,7 +26,7 @@ import com.example.homeservice.activities.LoginSignupChoiceActivity;
 import com.example.homeservice.utils.KeyUtils;
 import com.google.android.material.switchmaterial.SwitchMaterial;
 import com.google.firebase.auth.FirebaseAuth;
-import androidx.appcompat.app.AppCompatDelegate;
+import com.google.firebase.auth.FirebaseUser;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -51,9 +52,8 @@ public class AccountFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         init(view);
 
+        // --- Dark Mode Switch (Step 10) ---
         SwitchMaterial switchDarkMode = view.findViewById(R.id.switchDarkMode);
-
-        // Check current mode
         int currentMode = AppCompatDelegate.getDefaultNightMode();
         switchDarkMode.setChecked(currentMode == AppCompatDelegate.MODE_NIGHT_YES);
 
@@ -63,15 +63,22 @@ public class AccountFragment extends Fragment {
             } else {
                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
             }
-            // Save preference
             requireActivity().getSharedPreferences("APP", Context.MODE_PRIVATE)
                     .edit()
                     .putBoolean("dark_mode", isChecked)
                     .apply();
         });
 
-        userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
-        userPrefs = requireActivity().getSharedPreferences("USER", android.content.Context.MODE_PRIVATE);
+        // --- FIX 2: Null-safe Firebase user check ---
+        userPrefs = requireActivity().getSharedPreferences("USER", Context.MODE_PRIVATE);
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+
+        if (currentUser == null) {
+            Toast.makeText(getContext(), "Session expired. Please login again.", Toast.LENGTH_SHORT).show();
+            logout();
+            return;
+        }
+        userId = currentUser.getUid();
 
         loadUserInfo();
         loadProfilePic();
@@ -106,9 +113,10 @@ public class AccountFragment extends Fragment {
         }
     }
 
+    // --- FIX 1: Per-user filename ---
     private void saveImageLocally(Bitmap bitmap) {
         try {
-            File file = new File(getActivity().getFilesDir(), "profile_pic.jpg");
+            File file = new File(getActivity().getFilesDir(), "profile_pic_" + userId + ".jpg");
             FileOutputStream out = new FileOutputStream(file);
             bitmap.compress(Bitmap.CompressFormat.JPEG, 90, out);
             out.flush();
@@ -118,8 +126,9 @@ public class AccountFragment extends Fragment {
         }
     }
 
+    // --- FIX 1: Per-user filename ---
     private void loadProfilePic() {
-        File file = new File(getActivity().getFilesDir(), "profile_pic.jpg");
+        File file = new File(getActivity().getFilesDir(), "profile_pic_" + userId + ".jpg");
         if (file.exists()) {
             Bitmap bitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
             ivProfilePic.setImageBitmap(bitmap);
