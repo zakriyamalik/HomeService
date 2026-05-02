@@ -48,7 +48,7 @@ public class LoginActivity extends AppCompatActivity {
                     && password.equals(savedPassword)) {
                 sPref.edit().putBoolean(KeyUtils.KEY_IS_LOGIN, true).apply();
 
-                // Clear back stack and go to Home
+
                 Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
                 startActivity(intent);
