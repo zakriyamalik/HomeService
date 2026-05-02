@@ -1,5 +1,6 @@
 package com.example.homeservice.fragments;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
@@ -22,7 +23,9 @@ import androidx.fragment.app.Fragment;
 import com.example.homeservice.R;
 import com.example.homeservice.activities.LoginSignupChoiceActivity;
 import com.example.homeservice.utils.KeyUtils;
+import com.google.android.material.switchmaterial.SwitchMaterial;
 import com.google.firebase.auth.FirebaseAuth;
+import androidx.appcompat.app.AppCompatDelegate;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -47,6 +50,25 @@ public class AccountFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         init(view);
+
+        SwitchMaterial switchDarkMode = view.findViewById(R.id.switchDarkMode);
+
+        // Check current mode
+        int currentMode = AppCompatDelegate.getDefaultNightMode();
+        switchDarkMode.setChecked(currentMode == AppCompatDelegate.MODE_NIGHT_YES);
+
+        switchDarkMode.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (isChecked) {
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+            } else {
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+            }
+            // Save preference
+            requireActivity().getSharedPreferences("APP", Context.MODE_PRIVATE)
+                    .edit()
+                    .putBoolean("dark_mode", isChecked)
+                    .apply();
+        });
 
         userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
         userPrefs = requireActivity().getSharedPreferences("USER", android.content.Context.MODE_PRIVATE);

@@ -35,7 +35,7 @@
                 android:layout_height="wrap_content"
                 android:text="$0.00"
                 android:textSize="18sp"
-                android:textColor="@android:color/holo_green_dark"
+                android:textColor="@color/teal_200"
                 android:layout_marginBottom="16dp" />
 
             <TextView
@@ -44,7 +44,7 @@
                 android:layout_height="wrap_content"
                 android:text="No date/time selected"
                 android:textSize="14sp"
-                android:textColor="@android:color/darker_gray" />
+                android:textColor="@color/text_secondary" />
 
         </LinearLayout>
     </androidx.cardview.widget.CardView>
@@ -61,7 +61,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Confirm Booking"
-        android:backgroundTint="@android:color/holo_green_dark"
+        android:backgroundTint="@color/teal_200"
         android:enabled="false" />
 
 </LinearLayout>

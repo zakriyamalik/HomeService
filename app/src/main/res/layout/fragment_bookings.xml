@@ -16,7 +16,7 @@
         android:layout_height="wrap_content"
         android:text="No bookings yet.\nBook a service from the Home tab."
         android:textSize="18sp"
-        android:textColor="@android:color/darker_gray"
+        android:textColor="@color/text_secondary"
         android:layout_gravity="center"
         android:gravity="center"
         android:visibility="visible" />

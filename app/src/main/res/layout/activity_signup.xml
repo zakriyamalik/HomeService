@@ -59,7 +59,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Cancel"
-        android:backgroundTint="@android:color/darker_gray"
+        android:backgroundTint="@color/purple_500"
         android:layout_marginTop="10dp" />
 
     <TextView
@@ -67,7 +67,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Already have an account? Login"
-        android:textColor="@android:color/holo_blue_dark"
+        android:textColor="@color/text_primary"
         android:layout_marginTop="20dp" />
 
 </LinearLayout>

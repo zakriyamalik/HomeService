@@ -75,7 +75,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="Reset"
-            android:backgroundTint="@android:color/darker_gray" />
+            android:backgroundTint="@color/purple_500" />
     </LinearLayout>
 
 </LinearLayout>

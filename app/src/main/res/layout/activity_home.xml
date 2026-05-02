@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="@android:color/white">
+    android:background="@color/background">
 
     <com.google.android.material.tabs.TabLayout
         android:id="@+id/tabLayout"
@@ -12,9 +12,9 @@
         android:layout_height="wrap_content"
         app:tabMode="fixed"
         app:tabGravity="fill"
-        app:tabIndicatorColor="@android:color/black"
-        app:tabSelectedTextColor="@android:color/black"
-        app:tabTextColor="@android:color/darker_gray" />
+        app:tabIndicatorColor="?attr/colorPrimary"
+        app:tabSelectedTextColor="@color/text_primary"
+        app:tabTextColor="@color/text_secondary" />
 
     <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/viewPager"
