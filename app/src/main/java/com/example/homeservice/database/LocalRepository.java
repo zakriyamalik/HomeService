@@ -10,6 +10,7 @@ import com.example.homeservice.models.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import android.text.TextUtils;
 
 public class LocalRepository {
     private final DatabaseHelper dbHelper;
@@ -183,5 +184,48 @@ public class LocalRepository {
             if (cursor != null) cursor.close();
         }
         return bookings;
+    }
+    public List<Service> filterServices(Integer categoryId, Double minPrice, Double maxPrice) {
+        List<Service> services = new ArrayList<>();
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+
+        List<String> conditions = new ArrayList<>();
+        List<String> args = new ArrayList<>();
+
+        if (categoryId != null && categoryId != 0) {
+            conditions.add(DatabaseHelper.COLUMN_CATEGORY_ID + " = ?");
+            args.add(String.valueOf(categoryId));
+        }
+
+        if (minPrice != null && minPrice > 0) {
+            conditions.add(DatabaseHelper.COLUMN_SERVICE_PRICE + " >= ?");
+            args.add(String.valueOf(minPrice));
+        }
+
+        if (maxPrice != null && maxPrice > 0) {
+            conditions.add(DatabaseHelper.COLUMN_SERVICE_PRICE + " <= ?");
+            args.add(String.valueOf(maxPrice));
+        }
+
+        String whereClause = conditions.isEmpty() ? null : TextUtils.join(" AND ", conditions);
+        String[] whereArgs = args.isEmpty() ? null : args.toArray(new String[0]);
+
+        Cursor cursor = null;
+        try {
+            cursor = db.query(DatabaseHelper.TABLE_SERVICES, null, whereClause, whereArgs, null, null, null);
+            if (cursor != null && cursor.moveToFirst()) {
+                do {
+                    int id = cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_ID));
+                    String name = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_SERVICE_NAME));
+                    String description = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_SERVICE_DESCRIPTION));
+                    double price = cursor.getDouble(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_SERVICE_PRICE));
+                    int categoryIdFromDb = cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_CATEGORY_ID));
+                    services.add(new Service(id, name, description, price, categoryIdFromDb));
+                } while (cursor.moveToNext());
+            }
+        } finally {
+            if (cursor != null) cursor.close();
+        }
+        return services;
     }
 }

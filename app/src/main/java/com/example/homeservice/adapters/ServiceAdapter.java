@@ -72,6 +72,7 @@ public class ServiceAdapter extends RecyclerView.Adapter<ServiceAdapter.ServiceV
         holder.itemView.setOnClickListener(v -> listener.onServiceClick(service));
     }
 
+
     @Override
     public int getItemCount() {
         return displayList.size();
