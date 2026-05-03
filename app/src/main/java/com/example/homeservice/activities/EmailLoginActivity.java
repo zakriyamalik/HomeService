@@ -4,12 +4,12 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Patterns;
+import android.view.HapticFeedbackConstants;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -20,6 +20,7 @@ import com.example.homeservice.database.LocalRepository;
 import com.example.homeservice.utils.KeyUtils;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -43,7 +44,7 @@ public class EmailLoginActivity extends AppCompatActivity {
 
         initViews();
 
-        btnLogin.setOnClickListener(v -> attemptLogin());
+        btnLogin.setOnClickListener(v -> attemptLogin(v));
 
         tvRegisterLink.setOnClickListener(v -> {
             Intent intent = new Intent(EmailLoginActivity.this, EmailRegisterActivity.class);
@@ -51,7 +52,6 @@ public class EmailLoginActivity extends AppCompatActivity {
             finish();
         });
 
-        // FIXED: Now opens full ForgotPasswordActivity screen instead of Toast
         tvForgotPassword.setOnClickListener(v -> {
             Intent intent = new Intent(EmailLoginActivity.this, ForgotPasswordActivity.class);
             startActivity(intent);
@@ -67,26 +67,37 @@ public class EmailLoginActivity extends AppCompatActivity {
         progressBar = findViewById(R.id.progressBar);
     }
 
-    private void attemptLogin() {
+    private void showSnack(String message, int length) {
+        Snackbar.make(findViewById(android.R.id.content), message, length)
+                .setBackgroundTint(getColor(R.color.color_surface))
+                .setTextColor(getColor(R.color.color_text_primary))
+                .show();
+    }
+
+    private void attemptLogin(View v) {
         String email = etEmail.getText().toString().trim();
         String password = etPassword.getText().toString().trim();
 
         if (email.isEmpty()) {
+            v.performHapticFeedback(HapticFeedbackConstants.REJECT);
             etEmail.setError("Email is required");
             etEmail.requestFocus();
             return;
         }
         if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            v.performHapticFeedback(HapticFeedbackConstants.REJECT);
             etEmail.setError("Enter a valid email");
             etEmail.requestFocus();
             return;
         }
         if (password.isEmpty()) {
+            v.performHapticFeedback(HapticFeedbackConstants.REJECT);
             etPassword.setError("Password is required");
             etPassword.requestFocus();
             return;
         }
 
+        v.performHapticFeedback(HapticFeedbackConstants.CONFIRM);
         showLoading(true);
 
         mAuth.signInWithEmailAndPassword(email, password)
@@ -99,7 +110,7 @@ public class EmailLoginActivity extends AppCompatActivity {
                             FirebaseUser firebaseUser = mAuth.getCurrentUser();
                             if (firebaseUser == null) {
                                 showLoading(false);
-                                Toast.makeText(EmailLoginActivity.this, "Login failed", Toast.LENGTH_LONG).show();
+                                showSnack("Login failed", Snackbar.LENGTH_LONG);
                                 return;
                             }
 
@@ -117,7 +128,7 @@ public class EmailLoginActivity extends AppCompatActivity {
                                     .putBoolean(KeyUtils.KEY_IS_LOGIN, true)
                                     .apply();
 
-                            Toast.makeText(EmailLoginActivity.this, "Welcome back", Toast.LENGTH_SHORT).show();
+                            showSnack("Welcome back", Snackbar.LENGTH_SHORT);
 
                             Intent intent = new Intent(EmailLoginActivity.this, HomeActivity.class);
                             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -140,7 +151,7 @@ public class EmailLoginActivity extends AppCompatActivity {
                                     }
                                 }
                             }
-                            Toast.makeText(EmailLoginActivity.this, errorMsg, Toast.LENGTH_LONG).show();
+                            showSnack(errorMsg, Snackbar.LENGTH_LONG);
                         }
                     }
                 });

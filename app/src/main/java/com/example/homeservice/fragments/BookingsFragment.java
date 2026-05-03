@@ -8,6 +8,7 @@ import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -20,6 +21,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.homeservice.MyApplication;
 import com.example.homeservice.R;
+import com.example.homeservice.activities.HomeActivity;
 import com.example.homeservice.adapters.BookingAdapter;
 import com.example.homeservice.database.LocalRepository;
 import com.example.homeservice.models.Booking;
@@ -53,6 +55,16 @@ public class BookingsFragment extends Fragment
         super.onViewCreated(view, savedInstanceState);
         init(view);
         repository = new LocalRepository(MyApplication.getDatabaseHelper());
+        View emptyState = view.findViewById(R.id.emptyState);
+        if (emptyState != null) {
+            Button btnBrowse = emptyState.findViewById(R.id.btnBrowseServices);
+            btnBrowse.setOnClickListener(v -> {
+                // Switch to Home tab (position 0)
+                if (getActivity() instanceof HomeActivity) {
+                    ((HomeActivity) getActivity()).switchToTab(0);
+                }
+            });
+        }
         loadBookings();
     }
 
@@ -78,10 +90,6 @@ public class BookingsFragment extends Fragment
         });
     }
 
-    private void updateEmptyState(boolean isEmpty) {
-        rvBookings.setVisibility(isEmpty ? View.GONE : View.VISIBLE);
-        tvEmpty.setVisibility(isEmpty ? View.VISIBLE : View.GONE);
-    }
 
     // ---------- CANCELLATION (FIX 3: pass userId) ----------
     @Override
@@ -132,7 +140,13 @@ public class BookingsFragment extends Fragment
                 .setNegativeButton("Cancel", null)
                 .show();
     }
-
+    private void updateEmptyState(boolean isEmpty) {
+        rvBookings.setVisibility(isEmpty ? View.GONE : View.VISIBLE);
+        View emptyState = getView().findViewById(R.id.emptyState);
+        if (emptyState != null) {
+            emptyState.setVisibility(isEmpty ? View.VISIBLE : View.GONE);
+        }
+    }
     private void submitRating(Booking booking, int rating) {
         executor.execute(() -> {
             int result = repository.updateBookingRating(booking.getId(), rating, currentUserId);
@@ -165,6 +179,5 @@ public class BookingsFragment extends Fragment
 
     private void init(View view) {
         rvBookings = view.findViewById(R.id.rvBookings);
-        tvEmpty = view.findViewById(R.id.tvEmpty);
     }
 }

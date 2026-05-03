@@ -20,6 +20,7 @@ public class SplashActivity extends AppCompatActivity {
 
     private ImageView ivLogo;
     private TextView tvAppName;
+    private TextView tvTagline;
     private final Handler splashHandler = new Handler(Looper.getMainLooper());
     private Animation logoAnim;
     private Animation textAnim;
@@ -27,27 +28,37 @@ public class SplashActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // Dark mode setup
         boolean isDarkMode = getSharedPreferences("APP", MODE_PRIVATE)
                 .getBoolean("dark_mode", false);
         AppCompatDelegate.setDefaultNightMode(
                 isDarkMode ? AppCompatDelegate.MODE_NIGHT_YES : AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
         );
+
         setContentView(R.layout.activity_splash);
 
         ivLogo = findViewById(R.id.ivLogo);
         tvAppName = findViewById(R.id.tvAppName);
+        tvTagline = findViewById(R.id.tvTagline);
 
-        // Load separate animation instances (don't share state between views)
-        logoAnim = AnimationUtils.loadAnimation(this, R.anim.splash_animation);
-        textAnim = AnimationUtils.loadAnimation(this, R.anim.splash_animation);
+        // Load NEW separate animations from res/anim/
+        logoAnim = AnimationUtils.loadAnimation(this, R.anim.scale_up);   // Logo scales up
+        textAnim = AnimationUtils.loadAnimation(this, R.anim.fade_in);    // Text fades in
 
+        // Apply animations
         if (ivLogo != null) {
             ivLogo.startAnimation(logoAnim);
         }
         if (tvAppName != null) {
             tvAppName.startAnimation(textAnim);
         }
+        if (tvTagline != null) {
+            // Delay tagline fade slightly for staggered effect
+            tvTagline.postDelayed(() -> tvTagline.startAnimation(textAnim), 300);
+        }
 
+        // Check auth state
         SharedPreferences appPrefs = getSharedPreferences("APP", MODE_PRIVATE);
         SharedPreferences userPrefs = getSharedPreferences("USER", MODE_PRIVATE);
 
@@ -56,8 +67,9 @@ public class SplashActivity extends AppCompatActivity {
         String firebaseUid = userPrefs.getString("firebase_uid", null);
         boolean hasFirebaseUser = (firebaseUid != null && !firebaseUid.isEmpty());
 
+        // Navigate after delay with FADE transition
         splashHandler.postDelayed(() -> {
-            if (isFinishing()) return; // Don't route if user pressed back
+            if (isFinishing()) return;
 
             Intent intent;
             if (isLoggedIn && hasFirebaseUser) {
@@ -68,29 +80,22 @@ public class SplashActivity extends AppCompatActivity {
             } else {
                 intent = new Intent(SplashActivity.this, PhoneAuthActivity.class);
             }
+
             startActivity(intent);
+            overridePendingTransition(R.anim.fade_in, android.R.anim.fade_out);  // NEW: Premium fade
             finish();
-        }, 2000);
+        }, 2500); // Slightly longer for animation to breathe
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        // Remove pending handler callback to prevent crash on back press
         splashHandler.removeCallbacksAndMessages(null);
 
-        // Cancel running animations to prevent leak
-        if (logoAnim != null) {
-            logoAnim.cancel();
-        }
-        if (textAnim != null) {
-            textAnim.cancel();
-        }
-        if (ivLogo != null) {
-            ivLogo.clearAnimation();
-        }
-        if (tvAppName != null) {
-            tvAppName.clearAnimation();
-        }
+        if (logoAnim != null) logoAnim.cancel();
+        if (textAnim != null) textAnim.cancel();
+        if (ivLogo != null) ivLogo.clearAnimation();
+        if (tvAppName != null) tvAppName.clearAnimation();
+        if (tvTagline != null) tvTagline.clearAnimation();
     }
 }

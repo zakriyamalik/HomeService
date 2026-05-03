@@ -16,13 +16,18 @@ public class LoginSignupChoiceActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login_signup_choice);
         init();
+
         Button btnEmailAuth = findViewById(R.id.btnEmailAuth);
-        btnEmailAuth.setOnClickListener(v -> {
-            Intent intent = new Intent(LoginSignupChoiceActivity.this, EmailLoginActivity.class);
-            startActivity(intent);
-        });
-        btnLogin.setOnClickListener(v -> startActivity(new Intent(this, PhoneAuthActivity.class)));
-        btnSignup.setOnClickListener(v -> startActivity(new Intent(this, PhoneAuthActivity.class)));
+        btnEmailAuth.setOnClickListener(v -> startAnimated(EmailLoginActivity.class));
+
+        btnLogin.setOnClickListener(v -> startAnimated(PhoneAuthActivity.class));
+        btnSignup.setOnClickListener(v -> startAnimated(PhoneAuthActivity.class));
+    }
+
+    private void startAnimated(Class<?> targetActivity) {
+        Intent intent = new Intent(this, targetActivity);
+        startActivity(intent);
+        overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
     }
 
     private void init() {

@@ -7,22 +7,31 @@
     android:gravity="center"
     android:padding="@dimen/space_3">
 
-    <androidx.cardview.widget.CardView
+    <FrameLayout
         android:layout_width="64dp"
         android:layout_height="64dp"
-        app:cardCornerRadius="32dp"
-        app:cardElevation="@dimen/card_elevation"
-        app:cardBackgroundColor="@color/color_card_background">
+        android:foreground="@drawable/ripple_card_circle"
+        android:clickable="true"
+        android:focusable="true">
 
-        <ImageView
-            android:id="@+id/ivCategoryIcon"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:padding="@dimen/space_3"
-            android:src="@drawable/ic_category_all"
-            app:tint="@color/color_primary" />
+        <androidx.cardview.widget.CardView
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            app:cardCornerRadius="32dp"
+            app:cardElevation="@dimen/card_elevation"
+            app:cardBackgroundColor="@color/color_card_background">
 
-    </androidx.cardview.widget.CardView>
+            <ImageView
+                android:id="@+id/ivCategoryIcon"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:padding="@dimen/space_3"
+                android:src="@drawable/ic_category_all"
+                app:tint="@color/color_primary" />
+
+        </androidx.cardview.widget.CardView>
+
+    </FrameLayout>
 
     <TextView
         android:id="@+id/tvCategoryName"

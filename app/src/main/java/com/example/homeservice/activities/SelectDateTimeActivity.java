@@ -4,14 +4,15 @@ import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.HapticFeedbackConstants;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.homeservice.R;
 import com.example.homeservice.utils.KeyUtils;
+import com.google.android.material.snackbar.Snackbar;
 
 import java.util.Calendar;
 
@@ -33,15 +34,25 @@ public class SelectDateTimeActivity extends AppCompatActivity {
 
         btnConfirm.setOnClickListener(v -> {
             if (!selectedDate.isEmpty() && !selectedTime.isEmpty()) {
+                v.performHapticFeedback(HapticFeedbackConstants.CONFIRM);
                 Intent result = new Intent();
                 result.putExtra(KeyUtils.KEY_BOOKING_DATE, selectedDate);
                 result.putExtra(KeyUtils.KEY_BOOKING_TIME, selectedTime);
                 setResult(RESULT_OK, result);
                 finish();
+                overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
             } else {
-                Toast.makeText(this, "Please select both date and time", Toast.LENGTH_SHORT).show();
+                v.performHapticFeedback(HapticFeedbackConstants.REJECT);
+                showSnack("Please select both date and time", Snackbar.LENGTH_SHORT);
             }
         });
+    }
+
+    private void showSnack(String message, int length) {
+        Snackbar.make(findViewById(android.R.id.content), message, length)
+                .setBackgroundTint(getColor(R.color.color_surface))
+                .setTextColor(getColor(R.color.color_text_primary))
+                .show();
     }
 
     private void showDatePicker() {

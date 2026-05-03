@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/emptyStateBookings"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:padding="@dimen/space_8"
+    android:visibility="gone">
+
+    <ImageView
+        android:layout_width="140dp"
+        android:layout_height="140dp"
+        android:src="@drawable/ic_empty_state"
+        app:tint="@color/color_text_hint" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="No bookings yet"
+        android:textAppearance="@style/TextAppearance.HomeService.Heading20"
+        android:textColor="@color/color_text_primary"
+        android:layout_marginTop="@dimen/space_5" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Book a service from the Home tab"
+        android:textAppearance="@style/TextAppearance.HomeService.Body14"
+        android:textColor="@color/color_text_secondary"
+        android:layout_marginTop="@dimen/space_2"
+        android:gravity="center" />
+
+    <Button
+        android:id="@+id/btnBrowseServices"
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/button_height"
+        android:text="Browse Services"
+        android:textAppearance="@style/TextAppearance.HomeService.Button16"
+        android:layout_marginTop="@dimen/space_6"
+        android:backgroundTint="@color/color_primary" />
+
+</LinearLayout>

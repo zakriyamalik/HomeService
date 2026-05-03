@@ -4,12 +4,12 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Patterns;
+import android.view.HapticFeedbackConstants;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -20,6 +20,7 @@ import com.example.homeservice.database.LocalRepository;
 import com.example.homeservice.utils.KeyUtils;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -44,11 +45,14 @@ public class EmailRegisterActivity extends AppCompatActivity {
 
         initViews();
 
-        btnRegister.setOnClickListener(v -> attemptRegister());
-        tvLoginLink.setOnClickListener(v -> {
-            Intent intent = new Intent(EmailRegisterActivity.this, EmailLoginActivity.class);
-            startActivity(intent);
-        });
+        btnRegister.setOnClickListener(v -> attemptRegister(v));
+        tvLoginLink.setOnClickListener(v -> startAnimated(EmailLoginActivity.class));
+    }
+
+    private void startAnimated(Class<?> targetActivity) {
+        Intent intent = new Intent(this, targetActivity);
+        startActivity(intent);
+        overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
     }
 
     private void initViews() {
@@ -60,42 +64,56 @@ public class EmailRegisterActivity extends AppCompatActivity {
         tvLoginLink = findViewById(R.id.tvLoginLink);
     }
 
-    private void attemptRegister() {
+    private void showSnack(String message, int length) {
+        Snackbar.make(findViewById(android.R.id.content), message, length)
+                .setBackgroundTint(getColor(R.color.color_surface))
+                .setTextColor(getColor(R.color.color_text_primary))
+                .show();
+    }
+
+    private void attemptRegister(View v) {
         String name = etName.getText().toString().trim();
         String email = etEmail.getText().toString().trim();
         String password = etPassword.getText().toString().trim();
 
         if (name.isEmpty()) {
+            v.performHapticFeedback(HapticFeedbackConstants.REJECT);
             etName.setError("Name is required");
             etName.requestFocus();
             return;
         }
         if (name.length() < 2) {
+            v.performHapticFeedback(HapticFeedbackConstants.REJECT);
             etName.setError("Name must be at least 2 characters");
             etName.requestFocus();
             return;
         }
         if (email.isEmpty()) {
+            v.performHapticFeedback(HapticFeedbackConstants.REJECT);
             etEmail.setError("Email is required");
             etEmail.requestFocus();
             return;
         }
         if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            v.performHapticFeedback(HapticFeedbackConstants.REJECT);
             etEmail.setError("Enter a valid email");
             etEmail.requestFocus();
             return;
         }
         if (password.isEmpty()) {
+            v.performHapticFeedback(HapticFeedbackConstants.REJECT);
             etPassword.setError("Password is required");
             etPassword.requestFocus();
             return;
         }
         if (password.length() < 6) {
+            v.performHapticFeedback(HapticFeedbackConstants.REJECT);
             etPassword.setError("Password must be at least 6 characters");
             etPassword.requestFocus();
             return;
         }
 
+        v.performHapticFeedback(HapticFeedbackConstants.CONFIRM);
         showLoading(true);
 
         mAuth.createUserWithEmailAndPassword(email, password)
@@ -108,23 +126,19 @@ public class EmailRegisterActivity extends AppCompatActivity {
                             FirebaseUser firebaseUser = mAuth.getCurrentUser();
                             if (firebaseUser == null) {
                                 showLoading(false);
-                                Toast.makeText(EmailRegisterActivity.this,
-                                        "Registration failed", Toast.LENGTH_LONG).show();
+                                showSnack("Registration failed", Snackbar.LENGTH_LONG);
                                 return;
                             }
 
                             String uid = firebaseUser.getUid();
 
-                            // Save display name to Firebase (optional but useful)
                             UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
                                     .setDisplayName(name)
                                     .build();
                             firebaseUser.updateProfile(profileUpdates);
 
-                            // Save to local SQLite
                             repository.insertOrUpdateUser(uid, name, email, "", "");
 
-                            // Save session
                             SharedPreferences userPrefs = getSharedPreferences("USER", MODE_PRIVATE);
                             userPrefs.edit()
                                     .putString("firebase_uid", uid)
@@ -133,12 +147,12 @@ public class EmailRegisterActivity extends AppCompatActivity {
                                     .putBoolean(KeyUtils.KEY_IS_LOGIN, true)
                                     .apply();
 
-                            Toast.makeText(EmailRegisterActivity.this,
-                                    "Account created", Toast.LENGTH_SHORT).show();
+                            showSnack("Account created", Snackbar.LENGTH_SHORT);
 
                             Intent intent = new Intent(EmailRegisterActivity.this, HomeActivity.class);
                             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
                             startActivity(intent);
+                            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
                             finish();
                         } else {
                             showLoading(false);
@@ -157,7 +171,7 @@ public class EmailRegisterActivity extends AppCompatActivity {
                                     }
                                 }
                             }
-                            Toast.makeText(EmailRegisterActivity.this, errorMsg, Toast.LENGTH_LONG).show();
+                            showSnack(errorMsg, Snackbar.LENGTH_LONG);
                         }
                     }
                 });

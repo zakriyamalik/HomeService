@@ -29,7 +29,6 @@ public class OnboardingActivity extends AppCompatActivity {
         OnboardingPagerAdapter adapter = new OnboardingPagerAdapter(this);
         viewPager.setAdapter(adapter);
 
-        // Connect TabLayout with ViewPager2
         new TabLayoutMediator(tabLayout, viewPager, (tab, position) -> {}).attach();
 
         btnSkip.setOnClickListener(v -> finishOnboarding());
@@ -42,7 +41,6 @@ public class OnboardingActivity extends AppCompatActivity {
             }
         });
 
-        // Change button text on last slide
         viewPager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
             @Override
             public void onPageSelected(int position) {
@@ -58,8 +56,14 @@ public class OnboardingActivity extends AppCompatActivity {
     private void finishOnboarding() {
         SharedPreferences prefs = getSharedPreferences("APP", MODE_PRIVATE);
         prefs.edit().putBoolean("isFirstLaunch", false).apply();
-        startActivity(new Intent(this, LoginSignupChoiceActivity.class));
+        startAnimated(LoginSignupChoiceActivity.class);
         finish();
+    }
+
+    private void startAnimated(Class<?> targetActivity) {
+        Intent intent = new Intent(this, targetActivity);
+        startActivity(intent);
+        overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
     }
 
     private void init() {

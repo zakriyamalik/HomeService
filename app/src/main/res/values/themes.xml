@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <style name="Theme.HomeService" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+
         <!-- Primary -->
         <item name="colorPrimary">@color/color_primary</item>
         <item name="colorPrimaryVariant">@color/primary_main</item>

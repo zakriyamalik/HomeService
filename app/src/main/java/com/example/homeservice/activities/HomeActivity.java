@@ -48,7 +48,11 @@ public class HomeActivity extends AppCompatActivity {
             }
         }).attach();
     }
-
+    public void switchToTab(int position) {
+        if (viewPager != null && position >= 0 && position < 5) {
+            viewPager.setCurrentItem(position, true);
+        }
+    }
     private void init() {
         tabLayout = findViewById(R.id.tabLayout);
         viewPager = findViewById(R.id.viewPager);

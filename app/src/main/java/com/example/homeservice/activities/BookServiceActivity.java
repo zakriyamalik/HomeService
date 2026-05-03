@@ -1,12 +1,13 @@
 package com.example.homeservice.activities;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.view.HapticFeedbackConstants;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -17,10 +18,10 @@ import com.example.homeservice.R;
 import com.example.homeservice.database.LocalRepository;
 import com.example.homeservice.models.Booking;
 import com.example.homeservice.utils.KeyUtils;
+import com.google.android.material.snackbar.Snackbar;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import android.content.SharedPreferences;
 
 public class BookServiceActivity extends AppCompatActivity {
 
@@ -66,13 +67,25 @@ public class BookServiceActivity extends AppCompatActivity {
         btnSelectDateTime.setOnClickListener(v -> {
             Intent intent = new Intent(this, SelectDateTimeActivity.class);
             dateTimeLauncher.launch(intent);
+            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
         });
 
         btnConfirmBooking.setOnClickListener(v -> {
             if (!selectedDate.isEmpty() && !selectedTime.isEmpty()) {
+                v.performHapticFeedback(HapticFeedbackConstants.CONFIRM);
                 saveBookingToDatabase();
+            } else {
+                v.performHapticFeedback(HapticFeedbackConstants.REJECT);
+                showSnack("Please select date and time first", Snackbar.LENGTH_SHORT);
             }
         });
+    }
+
+    private void showSnack(String message, int length) {
+        Snackbar.make(findViewById(android.R.id.content), message, length)
+                .setBackgroundTint(getColor(R.color.color_surface))
+                .setTextColor(getColor(R.color.color_text_primary))
+                .show();
     }
 
     private void saveBookingToDatabase() {
@@ -91,13 +104,14 @@ public class BookServiceActivity extends AppCompatActivity {
                 btnConfirmBooking.setText("Confirm Booking");
 
                 if (result != -1) {
-                    Toast.makeText(this, "Booking confirmed for " + serviceName, Toast.LENGTH_LONG).show();
+                    showSnack("Booking confirmed for " + serviceName, Snackbar.LENGTH_LONG);
                     Intent homeIntent = new Intent(this, HomeActivity.class);
                     homeIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
                     startActivity(homeIntent);
+                    overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
                     finish();
                 } else {
-                    Toast.makeText(this, "Failed to save booking", Toast.LENGTH_SHORT).show();
+                    showSnack("Failed to save booking", Snackbar.LENGTH_SHORT);
                 }
             });
         });

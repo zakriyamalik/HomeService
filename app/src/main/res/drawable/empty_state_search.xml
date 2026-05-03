@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/emptyStateSearch"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:padding="@dimen/space_8"
+    android:visibility="gone">
+
+    <ImageView
+        android:layout_width="140dp"
+        android:layout_height="140dp"
+        android:src="@drawable/ic_empty_state"
+        app:tint="@color/color_text_hint" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="No results found"
+        android:textAppearance="@style/TextAppearance.HomeService.Heading20"
+        android:textColor="@color/color_text_primary"
+        android:layout_marginTop="@dimen/space_5" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Try a different search term"
+        android:textAppearance="@style/TextAppearance.HomeService.Body14"
+        android:textColor="@color/color_text_secondary"
+        android:layout_marginTop="@dimen/space_2"
+        android:gravity="center" />
+
+</LinearLayout>

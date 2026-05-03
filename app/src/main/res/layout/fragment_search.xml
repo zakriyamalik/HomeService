@@ -4,8 +4,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="@color/background"
-    android:padding="8dp">
+    android:background="@color/color_background"
+    android:padding="@dimen/screen_padding_horizontal">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -16,13 +16,14 @@
         <EditText
             android:id="@+id/etSearch"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="@dimen/input_height"
             android:layout_weight="1"
             android:hint="Search services..."
-            android:textColor="@color/text_primary"
-            android:textColorHint="@color/text_hint"
-            android:padding="12dp"
-            android:layout_margin="8dp" />
+            android:textAppearance="@style/TextAppearance.HomeService.Body16"
+            android:textColor="@color/color_text_primary"
+            android:textColorHint="@color/color_text_hint"
+            android:background="@drawable/bg_search_input"
+            android:paddingHorizontal="@dimen/space_4" />
 
         <ImageButton
             android:id="@+id/btnFilter"
@@ -30,15 +31,56 @@
             android:layout_height="48dp"
             android:src="@drawable/ic_filter"
             android:background="?attr/selectableItemBackgroundBorderless"
-            app:tint="?attr/colorControlNormal"
-            android:padding="12dp"
-            android:layout_margin="8dp"
+            app:tint="@color/color_text_secondary"
             android:contentDescription="Filter" />
+
     </LinearLayout>
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rvSearchResults"
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:layout_marginTop="@dimen/space_4">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvSearchResults"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+        <!-- Premium Empty State -->
+        <LinearLayout
+            android:id="@+id/emptyStateSearch"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:padding="@dimen/space_8"
+            android:visibility="gone">
+
+            <ImageView
+                android:layout_width="140dp"
+                android:layout_height="140dp"
+                android:src="@drawable/ic_empty_state"
+                android:alpha="0.5" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="No results found"
+                android:textAppearance="@style/TextAppearance.HomeService.Heading20"
+                android:textColor="@color/color_text_primary"
+                android:layout_marginTop="@dimen/space_5" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Try a different search term"
+                android:textAppearance="@style/TextAppearance.HomeService.Body14"
+                android:textColor="@color/color_text_secondary"
+                android:layout_marginTop="@dimen/space_2"
+                android:gravity="center" />
+
+        </LinearLayout>
+
+    </FrameLayout>
 
 </LinearLayout>

@@ -78,6 +78,20 @@ public class SearchFragment extends Fragment implements ServiceAdapter.OnService
         btnFilter.setOnClickListener(v -> showFilterBottomSheet());
     }
 
+    private void checkEmptyState(List<Service> results) {
+        View emptyState = getView().findViewById(R.id.emptyStateSearch);
+        RecyclerView rvResults = getView().findViewById(R.id.rvSearchResults);
+
+        if (emptyState != null && rvResults != null) {
+            if (results == null || results.isEmpty()) {
+                rvResults.setVisibility(View.GONE);
+                emptyState.setVisibility(View.VISIBLE);
+            } else {
+                rvResults.setVisibility(View.VISIBLE);
+                emptyState.setVisibility(View.GONE);
+            }
+        }
+    }
     private void loadAllServices() {
         executor.execute(() -> {
             List<Service> services = repository.getAllServices();
@@ -86,6 +100,7 @@ public class SearchFragment extends Fragment implements ServiceAdapter.OnService
                 allServices.clear();
                 allServices.addAll(services);
                 adapter.updateList(allServices);
+                checkEmptyState(allServices);
             });
         });
     }
@@ -102,6 +117,7 @@ public class SearchFragment extends Fragment implements ServiceAdapter.OnService
             }
         }
         adapter.updateList(filtered);
+        checkEmptyState(filtered);
     }
 
     private void showFilterBottomSheet() {
