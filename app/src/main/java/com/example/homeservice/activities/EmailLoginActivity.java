@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Patterns;
 import android.view.HapticFeedbackConstants;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -12,15 +13,18 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.homeservice.MyApplication;
 import com.example.homeservice.R;
 import com.example.homeservice.database.LocalRepository;
+import com.example.homeservice.models.User;
 import com.example.homeservice.utils.KeyUtils;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -118,22 +122,28 @@ public class EmailLoginActivity extends AppCompatActivity {
                             String name = firebaseUser.getDisplayName();
                             if (name == null || name.isEmpty()) name = "User";
 
-                            repository.insertOrUpdateUser(uid, name, email, "", "");
+                            User existingUser = repository.getUserByUid(uid);
+                            String phone = (existingUser != null && !existingUser.getPhone().isEmpty())
+                                    ? existingUser.getPhone() : "";
+
+                            repository.insertOrUpdateUser(uid, name, email, phone, "");
 
                             SharedPreferences userPrefs = getSharedPreferences("USER", MODE_PRIVATE);
                             userPrefs.edit()
                                     .putString("firebase_uid", uid)
                                     .putString(KeyUtils.KEY_NAME, name)
                                     .putString(KeyUtils.KEY_EMAIL, email)
+                                    .putString("user_phone", phone)
                                     .putBoolean(KeyUtils.KEY_IS_LOGIN, true)
                                     .apply();
 
                             showSnack("Welcome back", Snackbar.LENGTH_SHORT);
 
-                            Intent intent = new Intent(EmailLoginActivity.this, HomeActivity.class);
-                            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-                            startActivity(intent);
-                            finish();
+                            if (phone.isEmpty()) {
+                                showPhoneDialog(uid, name, email);
+                            } else {
+                                proceedToHome();
+                            }
                         } else {
                             showLoading(false);
                             String errorMsg = "Login failed";
@@ -155,6 +165,34 @@ public class EmailLoginActivity extends AppCompatActivity {
                         }
                     }
                 });
+    }
+
+    private void showPhoneDialog(String uid, String name, String email) {
+        View dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_add_phone, null);
+        TextInputEditText etPhone = dialogView.findViewById(R.id.etPhone);
+
+        new AlertDialog.Builder(this)
+                .setTitle("Add Phone Number")
+                .setMessage("Please add your phone number for better service")
+                .setView(dialogView)
+                .setCancelable(false)
+                .setPositiveButton("Save", (dialog, which) -> {
+                    String phone = etPhone.getText().toString().trim();
+                    if (phone.isEmpty()) phone = "";
+                    repository.updateUserPhone(uid, phone);
+                    SharedPreferences userPrefs = getSharedPreferences("USER", MODE_PRIVATE);
+                    userPrefs.edit().putString("user_phone", phone).apply();
+                    proceedToHome();
+                })
+                .setNegativeButton("Skip", (dialog, which) -> proceedToHome())
+                .show();
+    }
+
+    private void proceedToHome() {
+        Intent intent = new Intent(EmailLoginActivity.this, HomeActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
+        finish();
     }
 
     private void showLoading(boolean show) {

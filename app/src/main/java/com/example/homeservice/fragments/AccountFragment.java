@@ -8,6 +8,7 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,13 +19,18 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.fragment.app.Fragment;
 
+import com.example.homeservice.MyApplication;
 import com.example.homeservice.R;
 import com.example.homeservice.activities.LoginSignupChoiceActivity;
+import com.example.homeservice.database.LocalRepository;
+import com.example.homeservice.models.User;
 import com.example.homeservice.utils.KeyUtils;
 import com.google.android.material.switchmaterial.SwitchMaterial;
+import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
@@ -36,10 +42,12 @@ public class AccountFragment extends Fragment {
 
     private static final int PICK_IMAGE = 100;
     private ImageView ivProfilePic;
-    private Button btnUploadPic, btnLogout, btnCall, btnMap, btnWebsite;
+    private Button btnUploadPic, btnLogout, btnCall, btnMap, btnWebsite, btnAddPhone;
     private TextView tvUsername, tvEmail, tvUserPhone;
     private SharedPreferences userPrefs;
+    private LocalRepository repository;
     private String userId;
+    private String userPhoneNumber = "";
 
     @Nullable
     @Override
@@ -52,7 +60,8 @@ public class AccountFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         init(view);
 
-        // --- Dark Mode Switch (Step 10) ---
+        repository = new LocalRepository(MyApplication.getDatabaseHelper());
+
         SwitchMaterial switchDarkMode = view.findViewById(R.id.switchDarkMode);
         int currentMode = AppCompatDelegate.getDefaultNightMode();
         switchDarkMode.setChecked(currentMode == AppCompatDelegate.MODE_NIGHT_YES);
@@ -69,7 +78,6 @@ public class AccountFragment extends Fragment {
                     .apply();
         });
 
-        // --- FIX 2: Null-safe Firebase user check ---
         userPrefs = requireActivity().getSharedPreferences("USER", Context.MODE_PRIVATE);
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
 
@@ -89,6 +97,7 @@ public class AccountFragment extends Fragment {
         btnCall.setOnClickListener(v -> makeCall());
         btnMap.setOnClickListener(v -> openMap());
         btnWebsite.setOnClickListener(v -> openWebsite());
+        btnAddPhone.setOnClickListener(v -> showAddPhoneDialog());
     }
 
     private void pickImage() {
@@ -113,7 +122,6 @@ public class AccountFragment extends Fragment {
         }
     }
 
-    // --- FIX 1: Per-user filename ---
     private void saveImageLocally(Bitmap bitmap) {
         try {
             File file = new File(getActivity().getFilesDir(), "profile_pic_" + userId + ".jpg");
@@ -126,7 +134,6 @@ public class AccountFragment extends Fragment {
         }
     }
 
-    // --- FIX 1: Per-user filename ---
     private void loadProfilePic() {
         File file = new File(getActivity().getFilesDir(), "profile_pic_" + userId + ".jpg");
         if (file.exists()) {
@@ -136,13 +143,61 @@ public class AccountFragment extends Fragment {
     }
 
     private void loadUserInfo() {
+        FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
         String name = userPrefs.getString(KeyUtils.KEY_NAME, "User");
-        String email = userPrefs.getString(KeyUtils.KEY_EMAIL, name + "@example.com");
-        String phone = userPrefs.getString("user_phone", "Unknown");
+        String email = userPrefs.getString(KeyUtils.KEY_EMAIL, "");
+
+        if (firebaseUser != null && firebaseUser.getPhoneNumber() != null && !firebaseUser.getPhoneNumber().isEmpty()) {
+            userPhoneNumber = firebaseUser.getPhoneNumber();
+        } else {
+            userPhoneNumber = userPrefs.getString("user_phone", "");
+        }
+
+        if (userPhoneNumber.isEmpty()) {
+            User dbUser = repository.getUserByUid(userId);
+            if (dbUser != null) {
+                userPhoneNumber = dbUser.getPhone();
+                if (name.equals("User") && !dbUser.getName().isEmpty()) name = dbUser.getName();
+                if (email.isEmpty() && !dbUser.getEmail().isEmpty()) email = dbUser.getEmail();
+            }
+        }
 
         tvUsername.setText(name);
-        tvEmail.setText(email);
-        tvUserPhone.setText(phone);
+        tvEmail.setText(email.isEmpty() ? "No email" : email);
+
+        if (userPhoneNumber.isEmpty() || userPhoneNumber.equals("Unknown")) {
+            tvUserPhone.setText("No phone number");
+            btnAddPhone.setVisibility(View.VISIBLE);
+            btnCall.setEnabled(false);
+            btnCall.setAlpha(0.5f);
+        } else {
+            tvUserPhone.setText(userPhoneNumber);
+            btnAddPhone.setVisibility(View.GONE);
+            btnCall.setEnabled(true);
+            btnCall.setAlpha(1.0f);
+        }
+    }
+
+    private void showAddPhoneDialog() {
+        View dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_add_phone, null);
+        TextInputEditText etPhone = dialogView.findViewById(R.id.etPhone);
+
+        new AlertDialog.Builder(requireContext())
+                .setTitle("Add Phone Number")
+                .setMessage("Enter your phone number")
+                .setView(dialogView)
+                .setPositiveButton("Save", (dialog, which) -> {
+                    String phone = etPhone.getText().toString().trim();
+                    if (!phone.isEmpty()) {
+                        repository.updateUserPhone(userId, phone);
+                        userPrefs.edit().putString("user_phone", phone).apply();
+                        userPhoneNumber = phone;
+                        loadUserInfo();
+                        Toast.makeText(getContext(), "Phone number added", Toast.LENGTH_SHORT).show();
+                    }
+                })
+                .setNegativeButton("Cancel", null)
+                .show();
     }
 
     private void logout() {
@@ -154,8 +209,12 @@ public class AccountFragment extends Fragment {
     }
 
     private void makeCall() {
+        if (userPhoneNumber.isEmpty()) {
+            Toast.makeText(getContext(), "No phone number available", Toast.LENGTH_SHORT).show();
+            return;
+        }
         Intent intent = new Intent(Intent.ACTION_DIAL);
-        intent.setData(Uri.parse("tel:+1234567890"));
+        intent.setData(Uri.parse("tel:" + userPhoneNumber));
         startActivity(intent);
     }
 
@@ -185,5 +244,6 @@ public class AccountFragment extends Fragment {
         btnCall = view.findViewById(R.id.btnCall);
         btnMap = view.findViewById(R.id.btnMap);
         btnWebsite = view.findViewById(R.id.btnWebsite);
+        btnAddPhone = view.findViewById(R.id.btnAddPhone);
     }
 }
