@@ -4,52 +4,52 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    app:cardCornerRadius="12dp"
-    app:cardElevation="2dp"
-    android:layout_margin="8dp">
+    app:cardCornerRadius="@dimen/card_radius"
+    app:cardElevation="@dimen/card_elevation"
+    app:cardBackgroundColor="@color/color_card_background"
+    android:layout_margin="@dimen/space_2">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="16dp">
+        android:padding="@dimen/card_padding">
 
         <TextView
             android:id="@+id/tvBookingServiceName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Service Name"
-            android:textSize="18sp"
-            android:textStyle="bold" />
+            android:textAppearance="@style/TextAppearance.HomeService.Semi16"
+            android:textColor="@color/color_text_primary" />
 
         <TextView
             android:id="@+id/tvBookingDateTime"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Date &amp; Time"
-            android:textSize="14sp"
-            android:layout_marginTop="4dp" />
+            android:textAppearance="@style/TextAppearance.HomeService.Body14"
+            android:textColor="@color/color_text_secondary"
+            android:layout_marginTop="@dimen/space_1" />
 
         <TextView
             android:id="@+id/tvBookingPrice"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="$0.00"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            android:textColor="@color/teal_200"
-            android:layout_marginTop="8dp" />
+            android:textAppearance="@style/TextAppearance.HomeService.Semi16"
+            android:textColor="@color/color_primary"
+            android:layout_marginTop="@dimen/space_2" />
 
         <TextView
             android:id="@+id/tvBookingStatus"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Upcoming"
-            android:textSize="14sp"
-            android:textColor="@color/text_primary"
-            android:layout_marginTop="4dp" />
+            android:textAppearance="@style/TextAppearance.HomeService.Body14"
+            android:textColor="@color/color_text_primary"
+            android:layout_marginTop="@dimen/space_1" />
 
-        <!-- Read-only rating display -->
         <RatingBar
             android:id="@+id/rbBookingRating"
             android:layout_width="wrap_content"
@@ -58,30 +58,32 @@
             android:stepSize="1.0"
             android:isIndicator="true"
             android:rating="0"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="@dimen/space_2"
             style="?android:attr/ratingBarStyleSmall" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:layout_marginTop="12dp">
+            android:layout_marginTop="@dimen/space_3">
 
             <Button
                 android:id="@+id/btnRateBooking"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="@dimen/button_height"
                 android:layout_weight="1"
                 android:text="Rate"
-                android:layout_marginEnd="8dp" />
+                android:textAppearance="@style/TextAppearance.HomeService.Button16"
+                android:layout_marginEnd="@dimen/space_2" />
 
             <Button
                 android:id="@+id/btnCancelBooking"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="@dimen/button_height"
                 android:layout_weight="1"
                 android:text="Cancel"
-                android:backgroundTint="@android:color/holo_red_dark" />
+                android:textAppearance="@style/TextAppearance.HomeService.Button16"
+                android:backgroundTint="@color/color_error" />
         </LinearLayout>
 
     </LinearLayout>

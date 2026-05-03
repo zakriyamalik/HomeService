@@ -3,17 +3,18 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="8dp">
+    android:background="@color/color_background"
+    android:padding="@dimen/space_4">
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Categories"
-        android:textSize="18sp"
-        android:textStyle="bold"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginBottom="8dp" />
+        android:textAppearance="@style/TextAppearance.HomeService.Heading20"
+        android:textColor="@color/color_text_primary"
+        android:layout_marginStart="@dimen/space_2"
+        android:layout_marginTop="@dimen/space_2"
+        android:layout_marginBottom="@dimen/space_2" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvCategories"
@@ -24,11 +25,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Services"
-        android:textSize="18sp"
-        android:textStyle="bold"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginBottom="8dp" />
+        android:textAppearance="@style/TextAppearance.HomeService.Heading20"
+        android:textColor="@color/color_text_primary"
+        android:layout_marginStart="@dimen/space_2"
+        android:layout_marginTop="@dimen/space_4"
+        android:layout_marginBottom="@dimen/space_2" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvServices"

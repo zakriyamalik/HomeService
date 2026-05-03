@@ -4,37 +4,39 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:gravity="center"
-    android:background="@color/background"
-    android:padding="30dp">
+    android:background="@color/color_background"
+    android:padding="@dimen/space_8">
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Home Service"
-        android:textSize="32sp"
-        android:textStyle="bold"
-        android:textColor="@color/text_primary"
-        android:layout_marginBottom="60dp" />
+        android:textAppearance="@style/TextAppearance.HomeService.Heading32"
+        android:textColor="@color/color_text_primary"
+        android:layout_marginBottom="@dimen/space_15" />
 
     <Button
         android:id="@+id/btnEmailAuth"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="@dimen/button_height"
         android:text="Continue with Email"
-        android:layout_marginBottom="20dp" />
+        android:textAppearance="@style/TextAppearance.HomeService.Button16"
+        android:layout_marginBottom="@dimen/space_5" />
 
     <Button
         android:id="@+id/btnLogin"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="@dimen/button_height"
         android:text="Login with Phone"
-        android:layout_marginBottom="20dp" />
+        android:textAppearance="@style/TextAppearance.HomeService.Button16"
+        android:layout_marginBottom="@dimen/space_5" />
 
     <Button
         android:id="@+id/btnSignup"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="@dimen/button_height"
         android:text="Sign Up with Phone"
-        android:backgroundTint="@color/purple_500" />
+        android:textAppearance="@style/TextAppearance.HomeService.Button16"
+        android:backgroundTint="@color/color_primary" />
 
 </LinearLayout>

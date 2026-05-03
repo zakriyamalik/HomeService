@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Base Unit: 4dp -->
+    <dimen name="space_1">4dp</dimen>
+    <dimen name="space_2">8dp</dimen>
+    <dimen name="space_3">12dp</dimen>
+    <dimen name="space_4">16dp</dimen>
+    <dimen name="space_5">20dp</dimen>
+    <dimen name="space_6">24dp</dimen>
+    <dimen name="space_7">28dp</dimen>
+    <dimen name="space_8">32dp</dimen>
+    <dimen name="space_10">40dp</dimen>
+    <dimen name="space_12">48dp</dimen>
+    <dimen name="space_15">60dp</dimen>
+    <dimen name="space_20">80dp</dimen>
+
+    <!-- Screen Padding -->
+    <dimen name="screen_padding_horizontal">24dp</dimen>
+    <dimen name="screen_padding_vertical">16dp</dimen>
+
+    <!-- Component Heights -->
+    <dimen name="button_height">56dp</dimen>
+    <dimen name="input_height">56dp</dimen>
+    <dimen name="toolbar_height">56dp</dimen>
+    <dimen name="bottom_nav_height">64dp</dimen>
+
+    <!-- Component Radius -->
+    <dimen name="button_radius">12dp</dimen>
+    <dimen name="input_radius">12dp</dimen>
+    <dimen name="card_radius">16dp</dimen>
+    <dimen name="chip_radius">8dp</dimen>
+    <dimen name="avatar_radius">50%</dimen>
+
+    <!-- Card & Item -->
+    <dimen name="card_elevation">4dp</dimen>
+    <dimen name="card_padding">16dp</dimen>
+    <dimen name="service_card_width">160dp</dimen>
+    <dimen name="service_card_height">200dp</dimen>
+    <dimen name="category_chip_height">40dp</dimen>
+
+    <!-- Profile -->
+    <dimen name="profile_pic_size">80dp</dimen>
+    <dimen name="profile_pic_border">2dp</dimen>
+
+    <!-- Text Sizes (sp) -->
+    <dimen name="text_10">10sp</dimen>
+    <dimen name="text_12">12sp</dimen>
+    <dimen name="text_14">14sp</dimen>
+    <dimen name="text_16">16sp</dimen>
+    <dimen name="text_20">20sp</dimen>
+    <dimen name="text_32">32sp</dimen>
+</resources>

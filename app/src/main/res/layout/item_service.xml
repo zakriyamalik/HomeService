@@ -3,41 +3,42 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    app:cardCornerRadius="12dp"
-    app:cardElevation="2dp"
-    android:layout_margin="8dp">
+    app:cardCornerRadius="@dimen/card_radius"
+    app:cardElevation="@dimen/card_elevation"
+    app:cardBackgroundColor="@color/color_card_background"
+    android:layout_margin="@dimen/space_2">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="16dp">
+        android:padding="@dimen/card_padding">
 
         <TextView
             android:id="@+id/tvServiceName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Service Name"
-            android:textSize="18sp"
-            android:textStyle="bold" />
+            android:textAppearance="@style/TextAppearance.HomeService.Semi16"
+            android:textColor="@color/color_text_primary" />
 
         <TextView
             android:id="@+id/tvServiceDesc"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Description"
-            android:textSize="14sp"
-            android:layout_marginTop="4dp" />
+            android:textAppearance="@style/TextAppearance.HomeService.Body14"
+            android:textColor="@color/color_text_secondary"
+            android:layout_marginTop="@dimen/space_1" />
 
         <TextView
             android:id="@+id/tvServicePrice"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="$0.00"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            android:textColor="@color/teal_200"
-            android:layout_marginTop="8dp" />
+            android:textAppearance="@style/TextAppearance.HomeService.Semi16"
+            android:textColor="@color/color_primary"
+            android:layout_marginTop="@dimen/space_2" />
 
     </LinearLayout>
 

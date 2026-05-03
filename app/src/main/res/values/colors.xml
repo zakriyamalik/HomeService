@@ -1,18 +1,66 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="black">#FF000000</color>
-    <color name="white">#FFFFFFFF</color>
+    <!-- ============================================ -->
+    <!-- DESIGN TOKENS (from Figma)                   -->
+    <!-- ============================================ -->
 
-    <color name="purple_500">#6200EE</color>
-    <color name="purple_700">#3700B3</color>
-    <color name="teal_200">#03DAC5</color>
-    <color name="teal_700">#018786</color>
+    <!-- Primary -->
+    <color name="primary_main">#6759FF</color>
+    <color name="primary_white">#FFFFFF</color>
+    <color name="primary_black">#1B1B1B</color>
 
-    <color name="background">#FFFFFF</color>
-    <color name="surface">#FFFFFF</color>
-    <color name="card_background">#FFFFFF</color>
+    <!-- Neutral -->
+    <color name="neutral_dark_grey">#838383</color>
+    <color name="neutral_dark_grey_2">#AFAFAF</color>
+    <color name="neutral_light_grey">#F6F6F6</color>
+    <color name="neutral_light_grey_2">#F5F5F5</color>
+    <color name="neutral_light_grey_3">#E6E6E6</color>
 
-    <color name="text_primary">#1C1C1C</color>
-    <color name="text_secondary">#666666</color>
-    <color name="text_hint">#999999</color>
+    <!-- Semantic -->
+    <color name="semantic_green">#2AA952</color>
+    <color name="semantic_red">#DC1010</color>
+    <color name="semantic_blue">#007DFC</color>
+    <color name="semantic_yellow">#FFB932</color>
+
+    <!-- ============================================ -->
+    <!-- SEMANTIC ALIASES (new naming)                -->
+    <!-- ============================================ -->
+    <color name="color_primary">@color/primary_main</color>
+    <color name="color_on_primary">@color/primary_white</color>
+    <color name="color_background">@color/neutral_light_grey</color>
+    <color name="color_surface">@color/primary_white</color>
+    <color name="color_on_surface">@color/primary_black</color>
+    <color name="color_text_primary">@color/primary_black</color>
+    <color name="color_text_secondary">@color/neutral_dark_grey</color>
+    <color name="color_text_hint">@color/neutral_dark_grey_2</color>
+    <color name="color_error">@color/semantic_red</color>
+    <color name="color_success">@color/semantic_green</color>
+    <color name="color_divider">@color/neutral_light_grey_3</color>
+    <color name="color_card_background">@color/primary_white</color>
+    <color name="color_input_background">@color/primary_white</color>
+    <color name="color_input_border">@color/neutral_light_grey_3</color>
+
+    <!-- ============================================ -->
+    <!-- BACKWARD COMPATIBILITY (old layout names)    -->
+    <!-- ============================================ -->
+    <color name="background">@color/color_background</color>
+    <color name="surface">@color/color_surface</color>
+    <color name="text_primary">@color/color_text_primary</color>
+    <color name="text_secondary">@color/color_text_secondary</color>
+    <color name="text_hint">@color/color_text_hint</color>
+    <color name="card_background">@color/color_card_background</color>
+    <color name="input_background">@color/color_input_background</color>
+    <color name="input_border">@color/color_input_border</color>
+    <color name="error">@color/color_error</color>
+    <color name="success">@color/color_success</color>
+    <color name="divider">@color/color_divider</color>
+
+    <!-- ============================================ -->
+    <!-- MATERIAL DEFAULT COLORS (backward compat)    -->
+    <!-- ============================================ -->
+    <color name="purple_200">@color/primary_main</color>
+    <color name="purple_500">@color/primary_main</color>
+    <color name="purple_700">@color/primary_main</color>
+    <color name="teal_200">@color/semantic_blue</color>
+    <color name="teal_700">@color/semantic_blue</color>
 </resources>

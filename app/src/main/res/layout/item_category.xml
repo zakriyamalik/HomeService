@@ -5,22 +5,22 @@
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:gravity="center"
-    android:padding="12dp">
+    android:padding="@dimen/space_3">
 
     <androidx.cardview.widget.CardView
         android:layout_width="64dp"
         android:layout_height="64dp"
         app:cardCornerRadius="32dp"
-        app:cardElevation="4dp"
-        app:cardBackgroundColor="@color/card_background">
+        app:cardElevation="@dimen/card_elevation"
+        app:cardBackgroundColor="@color/color_card_background">
 
         <ImageView
             android:id="@+id/ivCategoryIcon"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:padding="12dp"
+            android:padding="@dimen/space_3"
             android:src="@drawable/ic_category_all"
-            app:tint="?attr/colorControlNormal" />
+            app:tint="@color/color_primary" />
 
     </androidx.cardview.widget.CardView>
 
@@ -29,8 +29,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Category"
-        android:textSize="12sp"
-        android:textColor="@color/text_primary"
-        android:layout_marginTop="8dp" />
+        android:textAppearance="@style/TextAppearance.HomeService.Semi12"
+        android:textColor="@color/color_text_primary"
+        android:layout_marginTop="@dimen/space_2" />
 
 </LinearLayout>

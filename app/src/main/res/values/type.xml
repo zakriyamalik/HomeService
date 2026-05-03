@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Heading SemiBold 32 -->
+    <style name="TextAppearance.HomeService.Heading32" parent="TextAppearance.MaterialComponents.Headline4">
+        <item name="fontFamily">@font/inter_semibold</item>
+        <item name="android:fontFamily">@font/inter_semibold</item>
+        <item name="android:textSize">32sp</item>
+        <item name="android:lineSpacingMultiplier">1.2</item>
+        <item name="android:textColor">@color/color_text_primary</item>
+    </style>
+
+    <!-- Heading SemiBold 20 -->
+    <style name="TextAppearance.HomeService.Heading20" parent="TextAppearance.MaterialComponents.Headline6">
+        <item name="fontFamily">@font/inter_semibold</item>
+        <item name="android:fontFamily">@font/inter_semibold</item>
+        <item name="android:textSize">20sp</item>
+        <item name="android:lineSpacingMultiplier">1.2</item>
+        <item name="android:textColor">@color/color_text_primary</item>
+    </style>
+
+    <!-- Body Regular 16 -->
+    <style name="TextAppearance.HomeService.Body16" parent="TextAppearance.MaterialComponents.Body1">
+        <item name="fontFamily">@font/inter_regular</item>
+        <item name="android:fontFamily">@font/inter_regular</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:lineSpacingMultiplier">1.2</item>
+        <item name="android:textColor">@color/color_text_primary</item>
+    </style>
+
+    <!-- Body Regular 14 -->
+    <style name="TextAppearance.HomeService.Body14" parent="TextAppearance.MaterialComponents.Body2">
+        <item name="fontFamily">@font/inter_regular</item>
+        <item name="android:fontFamily">@font/inter_regular</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:lineSpacingMultiplier">1.2</item>
+        <item name="android:textColor">@color/color_text_secondary</item>
+    </style>
+
+    <!-- Body Regular 12 -->
+    <style name="TextAppearance.HomeService.Body12" parent="TextAppearance.MaterialComponents.Caption">
+        <item name="fontFamily">@font/inter_regular</item>
+        <item name="android:fontFamily">@font/inter_regular</item>
+        <item name="android:textSize">12sp</item>
+        <item name="android:lineSpacingMultiplier">1.2</item>
+        <item name="android:textColor">@color/color_text_hint</item>
+    </style>
+
+    <!-- Body Regular 10 -->
+    <style name="TextAppearance.HomeService.Body10" parent="TextAppearance.MaterialComponents.Overline">
+        <item name="fontFamily">@font/inter_regular</item>
+        <item name="android:fontFamily">@font/inter_regular</item>
+        <item name="android:textSize">10sp</item>
+        <item name="android:lineSpacingMultiplier">1.2</item>
+        <item name="android:textColor">@color/color_text_hint</item>
+    </style>
+
+    <!-- Body SemiBold 16 -->
+    <style name="TextAppearance.HomeService.Button16" parent="TextAppearance.MaterialComponents.Button">
+        <item name="fontFamily">@font/inter_semibold</item>
+        <item name="android:fontFamily">@font/inter_semibold</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:textColor">@color/color_on_primary</item>
+        <item name="textAllCaps">false</item>
+    </style>
+
+    <!-- Body SemiBold 14 -->
+    <style name="TextAppearance.HomeService.Semi14" parent="TextAppearance.MaterialComponents.Subtitle2">
+        <item name="fontFamily">@font/inter_semibold</item>
+        <item name="android:fontFamily">@font/inter_semibold</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:lineSpacingMultiplier">1.2</item>
+        <item name="android:textColor">@color/color_text_primary</item>
+    </style>
+
+    <!-- Body SemiBold 12 -->
+    <style name="TextAppearance.HomeService.Semi12" parent="TextAppearance.MaterialComponents.Overline">
+        <item name="fontFamily">@font/inter_semibold</item>
+        <item name="android:fontFamily">@font/inter_semibold</item>
+        <item name="android:textSize">12sp</item>
+        <item name="android:lineSpacingMultiplier">1.2</item>
+        <item name="android:textColor">@color/color_text_secondary</item>
+    </style>
+
+    <!-- Body SemiBold 16 -->
+    <style name="TextAppearance.HomeService.Semi16" parent="TextAppearance.MaterialComponents.Subtitle1">
+        <item name="fontFamily">@font/inter_semibold</item>
+        <item name="android:fontFamily">@font/inter_semibold</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:lineSpacingMultiplier">1.2</item>
+        <item name="android:textColor">@color/color_text_primary</item>
+    </style>
+</resources>
