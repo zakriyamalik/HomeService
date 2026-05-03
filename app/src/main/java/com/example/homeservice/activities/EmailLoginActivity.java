@@ -44,12 +44,18 @@ public class EmailLoginActivity extends AppCompatActivity {
         initViews();
 
         btnLogin.setOnClickListener(v -> attemptLogin());
+
         tvRegisterLink.setOnClickListener(v -> {
             Intent intent = new Intent(EmailLoginActivity.this, EmailRegisterActivity.class);
             startActivity(intent);
             finish();
         });
-        tvForgotPassword.setOnClickListener(v -> sendPasswordReset());
+
+        // FIXED: Now opens full ForgotPasswordActivity screen instead of Toast
+        tvForgotPassword.setOnClickListener(v -> {
+            Intent intent = new Intent(EmailLoginActivity.this, ForgotPasswordActivity.class);
+            startActivity(intent);
+        });
     }
 
     private void initViews() {
@@ -101,7 +107,6 @@ public class EmailLoginActivity extends AppCompatActivity {
                             String name = firebaseUser.getDisplayName();
                             if (name == null || name.isEmpty()) name = "User";
 
-                            // Sync to local SQLite (handles reinstall case)
                             repository.insertOrUpdateUser(uid, name, email, "", "");
 
                             SharedPreferences userPrefs = getSharedPreferences("USER", MODE_PRIVATE);
@@ -137,26 +142,6 @@ public class EmailLoginActivity extends AppCompatActivity {
                             }
                             Toast.makeText(EmailLoginActivity.this, errorMsg, Toast.LENGTH_LONG).show();
                         }
-                    }
-                });
-    }
-
-    private void sendPasswordReset() {
-        String email = etEmail.getText().toString().trim();
-        if (email.isEmpty() || !Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-            etEmail.setError("Enter a valid email first");
-            etEmail.requestFocus();
-            return;
-        }
-
-        showLoading(true);
-        mAuth.sendPasswordResetEmail(email)
-                .addOnCompleteListener(task -> {
-                    showLoading(false);
-                    if (task.isSuccessful()) {
-                        Toast.makeText(this, "Password reset email sent", Toast.LENGTH_LONG).show();
-                    } else {
-                        Toast.makeText(this, "Failed to send reset email", Toast.LENGTH_LONG).show();
                     }
                 });
     }

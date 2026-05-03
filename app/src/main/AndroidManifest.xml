@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
+
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
@@ -34,8 +35,8 @@
         <activity android:name=".activities.ForgotPasswordActivity" android:exported="false" />
         <activity android:name=".activities.VerifyOtpActivity" android:exported="false" />
         <activity android:name=".activities.PhoneAuthActivity" android:exported="false" />
-        <activity android:name=".activities.EmailRegisterActivity" />
-        <activity android:name=".activities.EmailLoginActivity" />
+        <activity android:name=".activities.EmailRegisterActivity" android:exported="false" />
+        <activity android:name=".activities.EmailLoginActivity" android:exported="false" />
 
         <!-- Main Navigation -->
         <activity android:name=".activities.HomeActivity" android:exported="false" />
@@ -45,5 +46,4 @@
         <activity android:name=".activities.SelectDateTimeActivity" android:exported="false" />
 
     </application>
-
 </manifest>

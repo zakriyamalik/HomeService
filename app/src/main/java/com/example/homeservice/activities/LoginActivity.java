@@ -9,7 +9,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
-
+import com.example.homeservice.activities.ForgotPasswordActivity;
 import com.example.homeservice.R;
 import com.example.homeservice.utils.KeyUtils;
 
@@ -30,9 +30,10 @@ public class LoginActivity extends AppCompatActivity {
             finish();
         });
 
-        tvForgotPassword.setOnClickListener(v ->
-                startActivity(new Intent(this, ForgotPasswordActivity.class))
-        );
+        tvForgotPassword.setOnClickListener(v -> {
+            Intent intent = new Intent(LoginActivity.this, ForgotPasswordActivity.class);
+            startActivity(intent);
+        });
 
         btnCancel.setOnClickListener(v -> finish());
 
