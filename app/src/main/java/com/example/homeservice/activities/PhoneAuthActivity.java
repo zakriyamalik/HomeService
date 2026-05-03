@@ -4,11 +4,14 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.view.LayoutInflater;
+import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.homeservice.MyApplication;
@@ -32,6 +35,8 @@ public class PhoneAuthActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private String verificationId;
     private PhoneAuthProvider.ForceResendingToken resendToken;
+    private LocalRepository repository;
+    private String verifiedPhone;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,8 +45,7 @@ public class PhoneAuthActivity extends AppCompatActivity {
         init();
 
         mAuth = FirebaseAuth.getInstance();
-        // Optional: create LocalRepository if you need to store user info later
-        // LocalRepository repository = new LocalRepository(MyApplication.getDatabaseHelper());
+        repository = new LocalRepository(MyApplication.getDatabaseHelper());
 
         btnSendOtp.setOnClickListener(v -> sendOtp());
         btnVerifyOtp.setOnClickListener(v -> verifyOtp());
@@ -112,18 +116,14 @@ public class PhoneAuthActivity extends AppCompatActivity {
                 .addOnCompleteListener(this, task -> {
                     if (task.isSuccessful()) {
                         String uid = task.getResult().getUser().getUid();
-                        String phone = task.getResult().getUser().getPhoneNumber();
+                        verifiedPhone = task.getResult().getUser().getPhoneNumber();
 
-                        SharedPreferences prefs = getSharedPreferences("USER", MODE_PRIVATE);
-                        prefs.edit()
-                                .putString("firebase_uid", uid)
-                                .putString("user_phone", phone)
-                                .putBoolean(KeyUtils.KEY_IS_LOGIN, true)
-                                .apply();
-
-                        Toast.makeText(PhoneAuthActivity.this, "Login successful", Toast.LENGTH_SHORT).show();
-                        startActivity(new Intent(PhoneAuthActivity.this, HomeActivity.class));
-                        finish();
+                        com.example.homeservice.models.User existingUser = repository.getUserByUid(uid);
+                        if (existingUser == null || TextUtils.isEmpty(existingUser.getName()) || "User".equals(existingUser.getName())) {
+                            showNameDialog(uid, verifiedPhone);
+                        } else {
+                            saveAndProceed(uid, existingUser.getName(), "", verifiedPhone);
+                        }
                     } else {
                         btnVerifyOtp.setEnabled(true);
                         btnVerifyOtp.setText("Verify");
@@ -131,6 +131,42 @@ public class PhoneAuthActivity extends AppCompatActivity {
                         Toast.makeText(PhoneAuthActivity.this, "Invalid OTP", Toast.LENGTH_SHORT).show();
                     }
                 });
+    }
+
+    private void showNameDialog(String uid, String phone) {
+        View dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_add_name, null);
+        TextInputEditText etName = dialogView.findViewById(R.id.etName);
+
+        new AlertDialog.Builder(this)
+                .setTitle("Welcome!")
+                .setMessage("Please enter your name to complete your profile")
+                .setView(dialogView)
+                .setCancelable(false)
+                .setPositiveButton("Save", (dialog, which) -> {
+                    String name = etName.getText().toString().trim();
+                    if (TextUtils.isEmpty(name)) {
+                        name = "User";
+                    }
+                    saveAndProceed(uid, name, "", phone);
+                })
+                .show();
+    }
+
+    private void saveAndProceed(String uid, String name, String email, String phone) {
+        repository.insertOrUpdateUser(uid, name, email, phone, "");
+
+        SharedPreferences prefs = getSharedPreferences("USER", MODE_PRIVATE);
+        prefs.edit()
+                .putString("firebase_uid", uid)
+                .putString(KeyUtils.KEY_NAME, name)
+                .putString(KeyUtils.KEY_EMAIL, email)
+                .putString("user_phone", phone)
+                .putBoolean(KeyUtils.KEY_IS_LOGIN, true)
+                .apply();
+
+        Toast.makeText(this, "Login successful", Toast.LENGTH_SHORT).show();
+        startActivity(new Intent(this, HomeActivity.class));
+        finish();
     }
 
     private void init() {

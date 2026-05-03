@@ -7,6 +7,7 @@ import android.database.sqlite.SQLiteDatabase;
 import com.example.homeservice.models.Booking;
 import com.example.homeservice.models.Category;
 import com.example.homeservice.models.Service;
+import com.example.homeservice.models.User;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -241,5 +242,33 @@ public class LocalRepository {
         String whereClause = DatabaseHelper.COLUMN_BOOKING_USER_ID + " = ?";
         String[] whereArgs = {userId};
         return db.delete(DatabaseHelper.TABLE_BOOKINGS, whereClause, whereArgs);
+    }
+    public User getUserByUid(String uid) {
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+        String selection = DatabaseHelper.COLUMN_USER_UID + " = ?";
+        String[] selectionArgs = {uid};
+        Cursor cursor = null;
+        try {
+            cursor = db.query(DatabaseHelper.TABLE_USERS, null, selection, selectionArgs, null, null, null);
+            if (cursor != null && cursor.moveToFirst()) {
+                String name = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_USER_NAME));
+                String email = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_USER_EMAIL));
+                String phone = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_USER_PHONE));
+                String profilePic = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_USER_PROFILE_PIC));
+                return new User(uid, name, email, phone, profilePic);
+            }
+        } finally {
+            if (cursor != null) cursor.close();
+        }
+        return null;
+    }
+
+    public int updateUserPhone(String uid, String phone) {
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(DatabaseHelper.COLUMN_USER_PHONE, phone);
+        String whereClause = DatabaseHelper.COLUMN_USER_UID + " = ?";
+        String[] whereArgs = {uid};
+        return db.update(DatabaseHelper.TABLE_USERS, values, whereClause, whereArgs);
     }
 }

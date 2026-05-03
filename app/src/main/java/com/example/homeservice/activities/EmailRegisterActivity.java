@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Patterns;
 import android.view.HapticFeedbackConstants;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -12,6 +13,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.homeservice.MyApplication;
@@ -21,6 +23,7 @@ import com.example.homeservice.utils.KeyUtils;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -148,12 +151,7 @@ public class EmailRegisterActivity extends AppCompatActivity {
                                     .apply();
 
                             showSnack("Account created", Snackbar.LENGTH_SHORT);
-
-                            Intent intent = new Intent(EmailRegisterActivity.this, HomeActivity.class);
-                            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-                            startActivity(intent);
-                            overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
-                            finish();
+                            showPhoneDialog(uid, name, email);
                         } else {
                             showLoading(false);
                             String errorMsg = "Registration failed";
@@ -175,6 +173,34 @@ public class EmailRegisterActivity extends AppCompatActivity {
                         }
                     }
                 });
+    }
+
+    private void showPhoneDialog(String uid, String name, String email) {
+        View dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_add_phone, null);
+        TextInputEditText etPhone = dialogView.findViewById(R.id.etPhone);
+
+        new AlertDialog.Builder(this)
+                .setTitle("Add Phone Number")
+                .setMessage("Please add your phone number for better service")
+                .setView(dialogView)
+                .setCancelable(false)
+                .setPositiveButton("Save", (dialog, which) -> {
+                    String phone = etPhone.getText().toString().trim();
+                    repository.updateUserPhone(uid, phone);
+                    SharedPreferences userPrefs = getSharedPreferences("USER", MODE_PRIVATE);
+                    userPrefs.edit().putString("user_phone", phone).apply();
+                    proceedToHome();
+                })
+                .setNegativeButton("Skip", (dialog, which) -> proceedToHome())
+                .show();
+    }
+
+    private void proceedToHome() {
+        Intent intent = new Intent(EmailRegisterActivity.this, HomeActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
+        overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+        finish();
     }
 
     private void showLoading(boolean show) {

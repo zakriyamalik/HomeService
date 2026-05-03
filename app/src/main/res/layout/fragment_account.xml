@@ -21,7 +21,6 @@
             android:layout_height="match_parent"
             android:src="@drawable/ic_profile_default"
             android:scaleType="centerCrop" />
-        <!-- REMOVED app:tint — was causing grey photos -->
     </androidx.cardview.widget.CardView>
 
     <Button
@@ -59,6 +58,15 @@
         android:textColor="@color/color_text_secondary"
         android:layout_marginTop="@dimen/space_1" />
 
+    <Button
+        android:id="@+id/btnAddPhone"
+        android:layout_width="wrap_content"
+        android:layout_height="36dp"
+        android:text="Add Phone"
+        android:textSize="12sp"
+        android:visibility="gone"
+        android:layout_marginTop="@dimen/space_2" />
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -95,7 +103,6 @@
         android:textAppearance="@style/TextAppearance.HomeService.Button16"
         android:layout_marginTop="@dimen/space_6"
         android:backgroundTint="@color/color_error" />
-    <!-- CHANGED to red for destructive action -->
 
     <com.google.android.material.switchmaterial.SwitchMaterial
         android:id="@+id/switchDarkMode"
