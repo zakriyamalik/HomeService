@@ -8,6 +8,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.cardview.widget.CardView;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.homeservice.R;
@@ -20,21 +22,34 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Catego
     private Context context;
     private List<Category> categories;
     private OnCategoryClickListener listener;
+    private int selectedCategoryId;
+    private int layoutResId;
 
     public interface OnCategoryClickListener {
-        void onCategoryClick(Category category);
+        void onCategoryClick(Category category, int position);
     }
 
-    public CategoryAdapter(Context context, List<Category> categories, OnCategoryClickListener listener) {
+    public CategoryAdapter(Context context, List<Category> categories, OnCategoryClickListener listener, int selectedCategoryId) {
+        this(context, categories, listener, selectedCategoryId, R.layout.item_category);
+    }
+
+    public CategoryAdapter(Context context, List<Category> categories, OnCategoryClickListener listener, int selectedCategoryId, int layoutResId) {
         this.context = context;
         this.categories = categories;
         this.listener = listener;
+        this.selectedCategoryId = selectedCategoryId;
+        this.layoutResId = layoutResId;
+    }
+
+    public void setSelectedCategoryId(int selectedCategoryId) {
+        this.selectedCategoryId = selectedCategoryId;
+        notifyDataSetChanged();
     }
 
     @NonNull
     @Override
     public CategoryViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(context).inflate(R.layout.item_category, parent, false);
+        View view = LayoutInflater.from(context).inflate(layoutResId, parent, false);
         return new CategoryViewHolder(view);
     }
 
@@ -44,10 +59,20 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Catego
         holder.tvName.setText(category.getName());
         holder.ivIcon.setImageResource(getCategoryIcon(category.getName()));
 
-        // ✅ Click listener attached here
+        boolean isSelected = category.getId() == selectedCategoryId;
+        if (isSelected) {
+            holder.cvCategory.setCardBackgroundColor(ContextCompat.getColor(context, R.color.color_primary));
+            holder.ivIcon.setColorFilter(ContextCompat.getColor(context, R.color.primary_white));
+            holder.tvName.setTextColor(ContextCompat.getColor(context, R.color.color_primary));
+        } else {
+            holder.cvCategory.setCardBackgroundColor(ContextCompat.getColor(context, R.color.color_card_background));
+            holder.ivIcon.setColorFilter(ContextCompat.getColor(context, R.color.color_primary));
+            holder.tvName.setTextColor(ContextCompat.getColor(context, R.color.color_text_primary));
+        }
+
         holder.itemView.setOnClickListener(v -> {
             if (listener != null) {
-                listener.onCategoryClick(category);
+                listener.onCategoryClick(category, position);
             }
         });
     }
@@ -60,11 +85,13 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Catego
     static class CategoryViewHolder extends RecyclerView.ViewHolder {
         TextView tvName;
         ImageView ivIcon;
+        CardView cvCategory;
 
         public CategoryViewHolder(@NonNull View itemView) {
             super(itemView);
             tvName = itemView.findViewById(R.id.tvCategoryName);
             ivIcon = itemView.findViewById(R.id.ivCategoryIcon);
+            cvCategory = itemView.findViewById(R.id.cvCategory);
         }
     }
 

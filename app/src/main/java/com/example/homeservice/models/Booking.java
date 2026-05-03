@@ -1,6 +1,12 @@
 package com.example.homeservice.models;
 
 public class Booking {
+    public static final String STATUS_UPCOMING = "Upcoming";
+    public static final String STATUS_COMPLETED = "Completed";
+    public static final String STATUS_MISSED = "Missed";
+    public static final String STATUS_CANCELLED = "Cancelled";
+    public static final String STATUS_RATED = "Rated";
+
     private int id;
     private int serviceId;
     private String serviceName;
@@ -34,4 +40,8 @@ public class Booking {
     public String getStatus() { return status; }
     public int getRating() { return rating; }
     public String getUserId() { return userId; }
+
+    // Setters
+    public void setStatus(String status) { this.status = status; }
+    public void setRating(int rating) { this.rating = rating; }
 }

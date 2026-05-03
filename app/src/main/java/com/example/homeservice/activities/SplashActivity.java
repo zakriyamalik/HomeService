@@ -29,11 +29,11 @@ public class SplashActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // Dark mode setup
+        // FIXED: Default light mode, not system follow
         boolean isDarkMode = getSharedPreferences("APP", MODE_PRIVATE)
                 .getBoolean("dark_mode", false);
         AppCompatDelegate.setDefaultNightMode(
-                isDarkMode ? AppCompatDelegate.MODE_NIGHT_YES : AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
+                isDarkMode ? AppCompatDelegate.MODE_NIGHT_YES : AppCompatDelegate.MODE_NIGHT_NO
         );
 
         setContentView(R.layout.activity_splash);
@@ -42,11 +42,9 @@ public class SplashActivity extends AppCompatActivity {
         tvAppName = findViewById(R.id.tvAppName);
         tvTagline = findViewById(R.id.tvTagline);
 
-        // Load NEW separate animations from res/anim/
-        logoAnim = AnimationUtils.loadAnimation(this, R.anim.scale_up);   // Logo scales up
-        textAnim = AnimationUtils.loadAnimation(this, R.anim.fade_in);    // Text fades in
+        logoAnim = AnimationUtils.loadAnimation(this, R.anim.scale_up);
+        textAnim = AnimationUtils.loadAnimation(this, R.anim.fade_in);
 
-        // Apply animations
         if (ivLogo != null) {
             ivLogo.startAnimation(logoAnim);
         }
@@ -54,11 +52,9 @@ public class SplashActivity extends AppCompatActivity {
             tvAppName.startAnimation(textAnim);
         }
         if (tvTagline != null) {
-            // Delay tagline fade slightly for staggered effect
             tvTagline.postDelayed(() -> tvTagline.startAnimation(textAnim), 300);
         }
 
-        // Check auth state
         SharedPreferences appPrefs = getSharedPreferences("APP", MODE_PRIVATE);
         SharedPreferences userPrefs = getSharedPreferences("USER", MODE_PRIVATE);
 
@@ -67,7 +63,6 @@ public class SplashActivity extends AppCompatActivity {
         String firebaseUid = userPrefs.getString("firebase_uid", null);
         boolean hasFirebaseUser = (firebaseUid != null && !firebaseUid.isEmpty());
 
-        // Navigate after delay with FADE transition
         splashHandler.postDelayed(() -> {
             if (isFinishing()) return;
 
@@ -82,9 +77,9 @@ public class SplashActivity extends AppCompatActivity {
             }
 
             startActivity(intent);
-            overridePendingTransition(R.anim.fade_in, android.R.anim.fade_out);  // NEW: Premium fade
+            overridePendingTransition(R.anim.fade_in, android.R.anim.fade_out);
             finish();
-        }, 2500); // Slightly longer for animation to breathe
+        }, 2500);
     }
 
     @Override

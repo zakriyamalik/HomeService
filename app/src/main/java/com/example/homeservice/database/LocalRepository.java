@@ -19,8 +19,6 @@ public class LocalRepository {
         this.dbHelper = dbHelper;
     }
 
-    // ==================== STEP 1 METHODS ====================
-
     public List<Category> getAllCategories() {
         List<Category> categories = new ArrayList<>();
         SQLiteDatabase db = dbHelper.getReadableDatabase();
@@ -86,8 +84,6 @@ public class LocalRepository {
         return services;
     }
 
-    // ==================== STEP 2 METHODS ====================
-
     public long insertBooking(Booking booking) {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         ContentValues values = new ContentValues();
@@ -132,7 +128,6 @@ public class LocalRepository {
         return bookings;
     }
 
-    // --- FIX 3: Enforce user ownership on status update ---
     public int updateBookingStatus(int bookingId, String newStatus, String userId) {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         ContentValues values = new ContentValues();
@@ -144,11 +139,12 @@ public class LocalRepository {
         return db.update(DatabaseHelper.TABLE_BOOKINGS, values, whereClause, whereArgs);
     }
 
-    // --- FIX 4: Enforce user ownership on rating update ---
+    // FIXED: Rating a Completed booking also marks it as Rated
     public int updateBookingRating(int bookingId, int rating, String userId) {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put(DatabaseHelper.COLUMN_BOOKING_RATING, rating);
+        values.put(DatabaseHelper.COLUMN_BOOKING_STATUS, Booking.STATUS_RATED);
 
         String whereClause = DatabaseHelper.COLUMN_ID + " = ? AND " + DatabaseHelper.COLUMN_BOOKING_USER_ID + " = ?";
         String[] whereArgs = {String.valueOf(bookingId), userId};
@@ -229,6 +225,7 @@ public class LocalRepository {
         }
         return services;
     }
+
     public long insertOrUpdateUser(String uid, String name, String email, String phone, String profilePicUrl) {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         ContentValues values = new ContentValues();
@@ -237,6 +234,12 @@ public class LocalRepository {
         values.put(DatabaseHelper.COLUMN_USER_EMAIL, email);
         values.put(DatabaseHelper.COLUMN_USER_PHONE, phone);
         values.put(DatabaseHelper.COLUMN_USER_PROFILE_PIC, profilePicUrl);
-        return db.replace(DatabaseHelper.TABLE_USERS, null, values); // insert OR update
+        return db.replace(DatabaseHelper.TABLE_USERS, null, values);
+    }
+    public int deleteAllBookings(String userId) {
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        String whereClause = DatabaseHelper.COLUMN_BOOKING_USER_ID + " = ?";
+        String[] whereArgs = {userId};
+        return db.delete(DatabaseHelper.TABLE_BOOKINGS, whereClause, whereArgs);
     }
 }

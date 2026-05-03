@@ -74,12 +74,13 @@
                 android:layout_marginTop="@dimen/space_3">
 
                 <Button
-                    android:id="@+id/btnRateBooking"
+                    android:id="@+id/btnCompleteBooking"
                     android:layout_width="0dp"
                     android:layout_height="@dimen/button_height"
                     android:layout_weight="1"
-                    android:text="Rate"
+                    android:text="Complete"
                     android:textAppearance="@style/TextAppearance.HomeService.Button16"
+                    android:backgroundTint="@color/color_primary"
                     android:layout_marginEnd="@dimen/space_2" />
 
                 <Button
@@ -90,6 +91,16 @@
                     android:text="Cancel"
                     android:textAppearance="@style/TextAppearance.HomeService.Button16"
                     android:backgroundTint="@color/color_error" />
+
+                <Button
+                    android:id="@+id/btnRateBooking"
+                    android:layout_width="0dp"
+                    android:layout_height="@dimen/button_height"
+                    android:layout_weight="1"
+                    android:text="Rate"
+                    android:textAppearance="@style/TextAppearance.HomeService.Button16"
+                    android:backgroundTint="@color/color_primary" />
+
             </LinearLayout>
 
         </LinearLayout>

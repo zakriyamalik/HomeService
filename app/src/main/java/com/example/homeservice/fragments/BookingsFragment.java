@@ -10,8 +10,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.RatingBar;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -25,24 +23,36 @@ import com.example.homeservice.activities.HomeActivity;
 import com.example.homeservice.adapters.BookingAdapter;
 import com.example.homeservice.database.LocalRepository;
 import com.example.homeservice.models.Booking;
+import com.google.android.material.chip.ChipGroup;
+import com.google.android.material.snackbar.Snackbar;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class BookingsFragment extends Fragment
         implements BookingAdapter.OnCancelClickListener,
-        BookingAdapter.OnRateClickListener {
+        BookingAdapter.OnRateClickListener,
+        BookingAdapter.OnCompleteClickListener {
 
     private RecyclerView rvBookings;
-    private TextView tvEmpty;
+    private View emptyState;
+    private ChipGroup chipGroupFilter;
+    private Button btnClearAll;
     private BookingAdapter adapter;
     private LocalRepository repository;
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
     private final Handler mainHandler = new Handler(Looper.getMainLooper());
     private AlertDialog activeDialog;
-    private String currentUserId; // Cached for ownership checks
+    private String currentUserId;
+    private String currentFilter = "All";
+    private List<Booking> allBookings = new ArrayList<>();
+    private final SimpleDateFormat dateTimeFormat = new SimpleDateFormat("d/M/yyyy HH:mm", Locale.getDefault());
 
     @Nullable
     @Override
@@ -55,16 +65,28 @@ public class BookingsFragment extends Fragment
         super.onViewCreated(view, savedInstanceState);
         init(view);
         repository = new LocalRepository(MyApplication.getDatabaseHelper());
-        View emptyState = view.findViewById(R.id.emptyState);
-        if (emptyState != null) {
-            Button btnBrowse = emptyState.findViewById(R.id.btnBrowseServices);
+
+        Button btnBrowse = emptyState.findViewById(R.id.btnBrowseServices);
+        if (btnBrowse != null) {
             btnBrowse.setOnClickListener(v -> {
-                // Switch to Home tab (position 0)
                 if (getActivity() instanceof HomeActivity) {
                     ((HomeActivity) getActivity()).switchToTab(0);
                 }
             });
         }
+
+        btnClearAll.setOnClickListener(v -> showClearAllDialog());
+
+        chipGroupFilter.setOnCheckedChangeListener((group, checkedId) -> {
+            if (checkedId == R.id.chipAll) currentFilter = "All";
+            else if (checkedId == R.id.chipUpcoming) currentFilter = Booking.STATUS_UPCOMING;
+            else if (checkedId == R.id.chipCompleted) currentFilter = Booking.STATUS_COMPLETED;
+            else if (checkedId == R.id.chipMissed) currentFilter = Booking.STATUS_MISSED;
+            else if (checkedId == R.id.chipCancelled) currentFilter = Booking.STATUS_CANCELLED;
+            else if (checkedId == R.id.chipRated) currentFilter = Booking.STATUS_RATED;
+            applyFilter();
+        });
+
         loadBookings();
     }
 
@@ -73,25 +95,82 @@ public class BookingsFragment extends Fragment
                 .getString("firebase_uid", "temp_user");
 
         executor.execute(() -> {
-            List<Booking> bookings = repository.getAllActiveBookings(currentUserId);
+            List<Booking> bookings = repository.getAllBookings(currentUserId);
+
+            boolean anyUpdated = false;
+            for (Booking booking : bookings) {
+                if (Booking.STATUS_UPCOMING.equals(booking.getStatus()) && isDateTimePassed(booking)) {
+                    repository.updateBookingStatus(booking.getId(), Booking.STATUS_MISSED, currentUserId);
+                    booking.setStatus(Booking.STATUS_MISSED);
+                    anyUpdated = true;
+                }
+            }
+
+            if (anyUpdated) {
+                bookings = repository.getAllBookings(currentUserId);
+            }
+
+            allBookings.clear();
+            allBookings.addAll(bookings);
+
             mainHandler.post(() -> {
                 if (!isAdded() || getContext() == null) return;
-
-                if (adapter == null) {
-                    adapter = new BookingAdapter(requireContext(), new ArrayList<>(bookings),
-                            this, this);
-                    rvBookings.setLayoutManager(new LinearLayoutManager(requireContext()));
-                    rvBookings.setAdapter(adapter);
-                } else {
-                    adapter.updateBookings(bookings);
-                }
-                updateEmptyState(bookings.isEmpty());
+                applyFilter();
             });
         });
     }
 
+    private boolean isDateTimePassed(Booking booking) {
+        try {
+            Date bookingDate = dateTimeFormat.parse(booking.getDate() + " " + booking.getTime());
+            return bookingDate != null && bookingDate.before(new Date());
+        } catch (ParseException e) {
+            return false;
+        }
+    }
 
-    // ---------- CANCELLATION (FIX 3: pass userId) ----------
+    private void applyFilter() {
+        List<Booking> filtered = new ArrayList<>();
+        for (Booking booking : allBookings) {
+            if ("All".equals(currentFilter) || currentFilter.equals(booking.getStatus())) {
+                filtered.add(booking);
+            }
+        }
+
+        if (adapter == null) {
+            adapter = new BookingAdapter(requireContext(), filtered, this, this, this);
+            rvBookings.setLayoutManager(new LinearLayoutManager(requireContext()));
+            rvBookings.setAdapter(adapter);
+        } else {
+            adapter.updateBookings(filtered);
+        }
+
+        updateEmptyState(filtered.isEmpty());
+    }
+
+    private void updateEmptyState(boolean isEmpty) {
+        rvBookings.setVisibility(isEmpty ? View.GONE : View.VISIBLE);
+        if (emptyState != null) {
+            emptyState.setVisibility(isEmpty ? View.VISIBLE : View.GONE);
+        }
+    }
+
+    @Override
+    public void onCompleteClick(Booking booking) {
+        executor.execute(() -> {
+            int result = repository.updateBookingStatus(booking.getId(), Booking.STATUS_COMPLETED, currentUserId);
+            mainHandler.post(() -> {
+                if (!isAdded() || getContext() == null) return;
+                if (result > 0) {
+                    showSnack("Booking completed");
+                    loadBookings();
+                } else {
+                    showSnack("Failed to complete");
+                }
+            });
+        });
+    }
+
     @Override
     public void onCancelClick(Booking booking) {
         if (!isAdded() || getContext() == null) return;
@@ -106,20 +185,19 @@ public class BookingsFragment extends Fragment
 
     private void cancelBooking(Booking booking) {
         executor.execute(() -> {
-            int result = repository.updateBookingStatus(booking.getId(), "Cancelled", currentUserId);
+            int result = repository.updateBookingStatus(booking.getId(), Booking.STATUS_CANCELLED, currentUserId);
             mainHandler.post(() -> {
                 if (!isAdded() || getContext() == null) return;
                 if (result > 0) {
-                    Toast.makeText(getContext(), "Booking cancelled", Toast.LENGTH_SHORT).show();
+                    showSnack("Booking cancelled");
                     loadBookings();
                 } else {
-                    Toast.makeText(getContext(), "Failed to cancel", Toast.LENGTH_SHORT).show();
+                    showSnack("Failed to cancel");
                 }
             });
         });
     }
 
-    // ---------- RATING (FIX 4: pass userId) ----------
     @Override
     public void onRateClick(Booking booking) {
         if (!isAdded() || getContext() == null) return;
@@ -140,26 +218,52 @@ public class BookingsFragment extends Fragment
                 .setNegativeButton("Cancel", null)
                 .show();
     }
-    private void updateEmptyState(boolean isEmpty) {
-        rvBookings.setVisibility(isEmpty ? View.GONE : View.VISIBLE);
-        View emptyState = getView().findViewById(R.id.emptyState);
-        if (emptyState != null) {
-            emptyState.setVisibility(isEmpty ? View.VISIBLE : View.GONE);
-        }
-    }
+
     private void submitRating(Booking booking, int rating) {
         executor.execute(() -> {
             int result = repository.updateBookingRating(booking.getId(), rating, currentUserId);
             mainHandler.post(() -> {
                 if (!isAdded() || getContext() == null) return;
                 if (result > 0) {
-                    Toast.makeText(getContext(), "Rated " + rating + " stars", Toast.LENGTH_SHORT).show();
+                    showSnack("Rated " + rating + " stars");
                     loadBookings();
                 } else {
-                    Toast.makeText(getContext(), "Failed to save rating", Toast.LENGTH_SHORT).show();
+                    showSnack("Failed to save rating");
                 }
             });
         });
+    }
+
+    private void showClearAllDialog() {
+        activeDialog = new AlertDialog.Builder(requireContext())
+                .setTitle("Clear All Bookings")
+                .setMessage("Are you sure you want to remove all bookings? This cannot be undone.")
+                .setPositiveButton("Clear All", (dialog, which) -> clearAllBookings())
+                .setNegativeButton("Cancel", null)
+                .show();
+    }
+
+    private void clearAllBookings() {
+        executor.execute(() -> {
+            int result = repository.deleteAllBookings(currentUserId);
+            mainHandler.post(() -> {
+                if (!isAdded() || getContext() == null) return;
+                if (result > 0) {
+                    showSnack("All bookings cleared");
+                } else {
+                    showSnack("No bookings to clear");
+                }
+                loadBookings();
+            });
+        });
+    }
+
+    private void showSnack(String message) {
+        if (getView() == null) return;
+        Snackbar.make(getView(), message, Snackbar.LENGTH_SHORT)
+                .setBackgroundTint(requireContext().getColor(R.color.color_surface))
+                .setTextColor(requireContext().getColor(R.color.color_text_primary))
+                .show();
     }
 
     @Override
@@ -179,5 +283,8 @@ public class BookingsFragment extends Fragment
 
     private void init(View view) {
         rvBookings = view.findViewById(R.id.rvBookings);
+        emptyState = view.findViewById(R.id.emptyState);
+        chipGroupFilter = view.findViewById(R.id.chipGroupFilter);
+        btnClearAll = view.findViewById(R.id.btnClearAll);
     }
 }

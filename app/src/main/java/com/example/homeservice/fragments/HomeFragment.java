@@ -5,10 +5,8 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -25,6 +23,7 @@ import com.example.homeservice.database.LocalRepository;
 import com.example.homeservice.models.Category;
 import com.example.homeservice.models.Service;
 import com.example.homeservice.utils.KeyUtils;
+import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,9 +34,9 @@ public class HomeFragment extends Fragment implements CategoryAdapter.OnCategory
 
     private RecyclerView rvCategories, rvServices;
     private CategoryAdapter categoryAdapter;
-    private ServiceAdapter serviceAdapter;
     private LocalRepository repository;
     private List<Service> allServices = new ArrayList<>();
+    private int selectedCategoryId = -1;
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
     private final Handler mainHandler = new Handler(Looper.getMainLooper());
 
@@ -52,39 +51,43 @@ public class HomeFragment extends Fragment implements CategoryAdapter.OnCategory
         super.onViewCreated(view, savedInstanceState);
         init(view);
         repository = new LocalRepository(MyApplication.getDatabaseHelper());
-        loadCategoriesAndServices();
+        loadData();
     }
 
-    private void loadCategoriesAndServices() {
+    private void loadData() {
         executor.execute(() -> {
             List<Category> categories = repository.getAllCategories();
             List<Service> services = repository.getAllServices();
-            allServices.clear();
-            allServices.addAll(services);
+
+            if (services != null) {
+                allServices.clear();
+                allServices.addAll(services);
+            }
 
             mainHandler.post(() -> {
                 if (!isAdded() || getContext() == null) return;
 
-                categoryAdapter = new CategoryAdapter(requireContext(), categories, this);
-                rvCategories.setLayoutManager(new LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false));
+                // Setup categories (use database list only — no duplicate "All")
+                categoryAdapter = new CategoryAdapter(requireContext(), categories, this, selectedCategoryId);
+                LinearLayoutManager catLayoutManager = new LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false);
+                rvCategories.setLayoutManager(catLayoutManager);
                 rvCategories.setAdapter(categoryAdapter);
 
-                // ✅ Prevent ViewPager2 from stealing horizontal scrolls
-                rvCategories.setOnTouchListener((v, event) -> {
-                    switch (event.getAction()) {
-                        case MotionEvent.ACTION_DOWN:
-                        case MotionEvent.ACTION_MOVE:
-                            v.getParent().requestDisallowInterceptTouchEvent(true);
-                            break;
-                        case MotionEvent.ACTION_UP:
-                        case MotionEvent.ACTION_CANCEL:
-                            v.getParent().requestDisallowInterceptTouchEvent(false);
-                            break;
+                // Prevent ViewPager2 from stealing horizontal scrolls
+                rvCategories.addOnItemTouchListener(new RecyclerView.OnItemTouchListener() {
+                    @Override
+                    public boolean onInterceptTouchEvent(@NonNull RecyclerView rv, @NonNull android.view.MotionEvent e) {
+                        rv.getParent().requestDisallowInterceptTouchEvent(true);
+                        return false;
                     }
-                    return false;
+                    @Override
+                    public void onTouchEvent(@NonNull RecyclerView rv, @NonNull android.view.MotionEvent e) {}
+                    @Override
+                    public void onRequestDisallowInterceptTouchEvent(boolean disallowIntercept) {}
                 });
 
-                serviceAdapter = new ServiceAdapter(requireContext(), services, this);
+                // Setup services
+                ServiceAdapter serviceAdapter = new ServiceAdapter(requireContext(), new ArrayList<>(allServices), this);
                 rvServices.setLayoutManager(new LinearLayoutManager(requireContext()));
                 rvServices.setAdapter(serviceAdapter);
             });
@@ -92,22 +95,28 @@ public class HomeFragment extends Fragment implements CategoryAdapter.OnCategory
     }
 
     @Override
-    public void onCategoryClick(Category category) {
-        if (serviceAdapter == null) return;
+    public void onCategoryClick(Category category, int position) {
+        selectedCategoryId = category.getId();
+        categoryAdapter.setSelectedCategoryId(selectedCategoryId);
 
-        executor.execute(() -> {
-            List<Service> filtered;
-            if (category.getId() == 0) {
-                filtered = new ArrayList<>(allServices);
-            } else {
-                filtered = repository.getServicesByCategory(category.getId());
+        List<Service> filtered = new ArrayList<>();
+        if (category.getId() == 0 || "All".equalsIgnoreCase(category.getName())) {
+            filtered.addAll(allServices);
+        } else {
+            for (Service service : allServices) {
+                if (service.getCategoryId() == category.getId()) {
+                    filtered.add(service);
+                }
             }
-            mainHandler.post(() -> {
-                if (!isAdded() || getContext() == null) return;
-                serviceAdapter.updateList(filtered);
-                Toast.makeText(getContext(), "Showing: " + category.getName(), Toast.LENGTH_SHORT).show();
-            });
-        });
+        }
+
+        // Recreate adapter with filtered list to force refresh
+        ServiceAdapter newAdapter = new ServiceAdapter(requireContext(), filtered, this);
+        rvServices.setAdapter(newAdapter);
+
+        if (category.getId() != 0 && !"All".equalsIgnoreCase(category.getName())) {
+            showSnack("Showing: " + category.getName());
+        }
     }
 
     @Override
@@ -118,6 +127,14 @@ public class HomeFragment extends Fragment implements CategoryAdapter.OnCategory
         intent.putExtra(KeyUtils.KEY_SERVICE_NAME, service.getName());
         intent.putExtra(KeyUtils.KEY_SERVICE_PRICE, service.getPrice());
         startActivity(intent);
+    }
+
+    private void showSnack(String message) {
+        if (getView() == null) return;
+        Snackbar.make(getView(), message, Snackbar.LENGTH_SHORT)
+                .setBackgroundTint(requireContext().getColor(R.color.color_surface))
+                .setTextColor(requireContext().getColor(R.color.color_text_primary))
+                .show();
     }
 
     @Override

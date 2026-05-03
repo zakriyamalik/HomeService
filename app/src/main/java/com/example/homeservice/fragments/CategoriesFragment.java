@@ -7,7 +7,6 @@ import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -22,8 +21,8 @@ import com.example.homeservice.adapters.CategoryAdapter;
 import com.example.homeservice.database.LocalRepository;
 import com.example.homeservice.models.Category;
 import com.example.homeservice.models.Service;
+import com.google.android.material.snackbar.Snackbar;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -51,16 +50,22 @@ public class CategoriesFragment extends Fragment implements CategoryAdapter.OnCa
     }
 
     private void loadCategories() {
-        List<Category> categories = repository.getAllCategories();
-        adapter = new CategoryAdapter(requireContext(), categories, this);
-        rvCategories.setLayoutManager(new GridLayoutManager(requireContext(), 2));
-        rvCategories.setAdapter(adapter);
+        executor.execute(() -> {
+            List<Category> categories = repository.getAllCategories();
+            mainHandler.post(() -> {
+                if (!isAdded() || getContext() == null) return;
+
+                adapter = new CategoryAdapter(requireContext(), categories, this, -1, R.layout.item_category_grid);
+                rvCategories.setLayoutManager(new GridLayoutManager(requireContext(), 2));
+                rvCategories.setAdapter(adapter);
+            });
+        });
     }
 
     @Override
-    public void onCategoryClick(Category category) {
+    public void onCategoryClick(Category category, int position) {
         if (category.getId() == 0) {
-            Toast.makeText(requireContext(), "Select a specific category", Toast.LENGTH_SHORT).show();
+            showSnack("Select a specific category");
             return;
         }
 
@@ -70,7 +75,7 @@ public class CategoriesFragment extends Fragment implements CategoryAdapter.OnCa
                 if (!isAdded() || getContext() == null) return;
 
                 if (services.isEmpty()) {
-                    Toast.makeText(getContext(), "No services in " + category.getName(), Toast.LENGTH_SHORT).show();
+                    showSnack("No services in " + category.getName());
                     return;
                 }
 
@@ -96,6 +101,14 @@ public class CategoriesFragment extends Fragment implements CategoryAdapter.OnCa
                     startActivity(intent);
                 })
                 .setNegativeButton("Close", null)
+                .show();
+    }
+
+    private void showSnack(String message) {
+        if (getView() == null) return;
+        Snackbar.make(getView(), message, Snackbar.LENGTH_SHORT)
+                .setBackgroundTint(requireContext().getColor(R.color.color_surface))
+                .setTextColor(requireContext().getColor(R.color.color_text_primary))
                 .show();
     }
 
